@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileSettingsController;
 use App\Http\Controllers\RegistrationApprovalController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,10 @@ Route::middleware('guest')->group(function (): void {
 
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/profile', [ProfileSettingsController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileSettingsController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileSettingsController::class, 'updatePassword'])
+        ->name('profile.password.update');
     Route::get('/dashboard', function () {
         if (auth()->user()->role === 'admin') {
             return redirect()->route('admin.access-requests.index');
