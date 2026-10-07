@@ -41,7 +41,7 @@ class ProfileSettingsTest extends TestCase
         }
     }
 
-    public function test_user_can_update_their_name_and_email_without_changing_their_role(): void
+    public function test_user_can_update_their_name_and_email_without_changing_role_or_status(): void
     {
         $user = User::factory()->create([
             'role' => User::ROLE_SUPERVISOR,
@@ -71,6 +71,7 @@ class ProfileSettingsTest extends TestCase
             'action' => 'profile_updated',
             'record_type' => User::class,
             'record_id' => $user->id,
+            'details' => 'Updated profile fields: name, email.',
         ]);
     }
 
@@ -112,6 +113,7 @@ class ProfileSettingsTest extends TestCase
             'record_type' => User::class,
             'record_id' => $user->id,
         ]);
+        $this->assertDatabaseMissing('activity_logs', ['details' => 'new-password-123']);
     }
 
     public function test_password_change_rejects_an_incorrect_current_password(): void

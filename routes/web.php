@@ -41,11 +41,13 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [FieldLoginController::class, 'destroy'])->name('logout');
     Route::get('/profile', [ProfileSettingsController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileSettingsController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [ProfileSettingsController::class, 'updatePassword'])->name('profile.password.update');
+    Route::put('/profile/password', [ProfileSettingsController::class, 'updatePassword'])
+        ->name('profile.password.update');
 });
 
 Route::middleware(['auth', 'admin'])->group(function (): void {
     Route::get('/admin/dashboard', AdminDashboardController::class)->name('admin.dashboard');
+
     Route::get('/admin/registration-requests', [AdminRegistrationRequestController::class, 'index'])
         ->name('admin.registration-requests');
     Route::post('/admin/registration-requests/{registrationRequest}/approve', [
@@ -56,6 +58,17 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
         AdminRegistrationRequestController::class,
         'reject',
     ])->name('admin.registration-requests.reject');
+
+    Route::get('/admin/access-requests', [AdminRegistrationRequestController::class, 'index'])
+        ->name('admin.access-requests.index');
+    Route::post('/admin/access-requests/{registrationRequest}/approve', [
+        AdminRegistrationRequestController::class,
+        'approve',
+    ])->name('admin.access-requests.approve');
+    Route::post('/admin/access-requests/{registrationRequest}/reject', [
+        AdminRegistrationRequestController::class,
+        'reject',
+    ])->name('admin.access-requests.reject');
 });
 
 Route::middleware(['auth', 'supervisor'])->prefix('supervisor')->name('supervisor.')->group(function (): void {

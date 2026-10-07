@@ -23,6 +23,13 @@ class User extends Authenticatable
 
     public const ROLE_FIELD_PERSONNEL = 'field_personnel';
 
+    public const ROLES = [
+        self::ROLE_ADMIN => 'Administrator',
+        self::ROLE_OPERATIONS => 'Operations / Engineering Staff',
+        self::ROLE_SUPERVISOR => 'Supervisor / Dispatcher',
+        self::ROLE_FIELD_PERSONNEL => 'Field Personnel',
+    ];
+
     public function assignedWorkOrders(): HasMany
     {
         return $this->hasMany(WorkOrder::class, 'assigned_personnel_id');
