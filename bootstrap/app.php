@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\RequireAdministrator;
+use App\Http\Middleware\RequireFieldPersonnel;
+use App\Http\Middleware\RequireSupervisor;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'admin' => RequireAdministrator::class,
+            'field' => RequireFieldPersonnel::class,
+            'supervisor' => RequireSupervisor::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
