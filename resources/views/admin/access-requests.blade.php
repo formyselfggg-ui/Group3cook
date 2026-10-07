@@ -10,6 +10,7 @@
             DASURECO <span style="color:#8c978f;font-weight:500">/ Admin</span>
         </a>
         <div class="workspace-user">
+            <a class="text-button" href="{{ route('profile.edit') }}">Profile settings</a>
             <span>{{ auth()->user()->name }}</span>
             <form method="POST" action="{{ route('logout') }}">@csrf<button class="text-button" type="submit">Sign out</button></form>
         </div>
