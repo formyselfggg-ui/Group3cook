@@ -20,7 +20,6 @@ class User extends Authenticatable
         'supervisor' => 'Supervisor / Dispatcher',
         'field_personnel' => 'Field Personnel',
     ];
-
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
