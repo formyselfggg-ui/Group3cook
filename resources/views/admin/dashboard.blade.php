@@ -38,45 +38,22 @@
 
     <section class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="System summary">
         <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
-            <div class="flex items-center justify-between gap-2">
-                <h2 class="text-xs font-semibold text-[#78857b]">Total users</h2>
-                <span class="grid size-9 place-items-center rounded-xl bg-[#edf5ed] text-[#34724a]" aria-hidden="true">
-                    <svg class="size-5" viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a4.5 4.5 0 0 0-4.5-4.5h-4A4.5 4.5 0 0 0 3 18.5V20m15-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 11v-1.5a4.5 4.5 0 0 0-3.4-4.36M9.5 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                </span>
-            </div>
+            <h2 class="text-xs font-semibold text-[#78857b]">Total users</h2>
             <p class="mt-4 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($totalUsers) }}</p>
             <p class="mt-1 text-[11px] text-[#879188]">Across all system roles</p>
         </article>
-
         <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
-            <div class="flex items-center justify-between gap-2">
-                <h2 class="text-xs font-semibold text-[#78857b]">Active users</h2>
-                <span class="grid size-9 place-items-center rounded-xl bg-[#edf8ef] text-[#34724a]" aria-hidden="true">
-                    <svg class="size-5" viewBox="0 0 24 24" fill="none"><path d="m5 12.5 4.2 4.2L19 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-            </div>
+            <h2 class="text-xs font-semibold text-[#78857b]">Active users</h2>
             <p class="mt-4 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($activeUsers) }}</p>
             <p class="mt-1 text-[11px] text-[#879188]">{{ number_format($inactiveUsers) }} inactive</p>
         </article>
-
         <a class="group rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] transition hover:border-[#c5dec5] hover:shadow-[0_10px_28px_rgba(30,54,35,.07)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b] sm:p-5" href="{{ route('admin.registration-requests') }}">
-            <div class="flex items-center justify-between gap-2">
-                <h2 class="text-xs font-semibold text-[#78857b]">Pending requests</h2>
-                <span class="grid size-9 place-items-center rounded-xl bg-[#fff5e7] text-[#a76518]" aria-hidden="true">
-                    <svg class="size-5" viewBox="0 0 24 24" fill="none"><path d="M12 7v5l3 2m5-2a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-            </div>
+            <h2 class="text-xs font-semibold text-[#78857b]">Pending requests</h2>
             <p class="mt-4 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($pendingRegistrationRequests) }}</p>
             <p class="mt-1 text-[11px] text-[#879188] group-hover:text-[#356947]">Review access requests <span aria-hidden="true">→</span></p>
         </a>
-
         <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
-            <div class="flex items-center justify-between gap-2">
-                <h2 class="text-xs font-semibold text-[#78857b]">Urgent work orders</h2>
-                <span class="grid size-9 place-items-center rounded-xl bg-[#fff0ec] text-[#a64b39]" aria-hidden="true">
-                    <svg class="size-5" viewBox="0 0 24 24" fill="none"><path d="M12 8v4m0 4h.01M10.3 3.9 2.9 17a2 2 0 0 0 1.75 3h14.7a2 2 0 0 0 1.75-3l-7.4-13.1a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
-            </div>
+            <h2 class="text-xs font-semibold text-[#78857b]">Urgent work orders</h2>
             <p class="mt-4 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($urgentWorkOrders) }}</p>
             <p class="mt-1 text-[11px] text-[#879188]">Still open and needing attention</p>
         </article>
@@ -118,7 +95,7 @@
                             <dd class="text-xs font-bold tabular-nums text-[#344a3b]">{{ number_format($roleCount) }}</dd>
                         </div>
                         <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-[#edf2ec]" role="img" aria-label="{{ $label }}: {{ $roleCount }} of {{ $totalUsers }} users">
-                            <div class="h-full rounded-full bg-[#4c9163] transition-all" style="width: {{ $roleWidth }}%"></div>
+                            <div class="h-full rounded-full bg-[#4c9163]" style="width: {{ $roleWidth }}%"></div>
                         </div>
                     </div>
                 @endforeach
@@ -129,28 +106,20 @@
         </section>
 
         <section class="overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]" aria-labelledby="recent-activity-heading">
-            <div class="flex items-center justify-between gap-3 border-b border-[#edf0ec] px-5 py-4 sm:px-6">
-                <div>
-                    <h2 id="recent-activity-heading" class="text-sm font-semibold text-[#26382c]">Recent system activity</h2>
-                    <p class="mt-1 text-xs text-[#879188]">Latest account and operational events.</p>
-                </div>
-                <span class="grid size-9 place-items-center rounded-xl bg-[#f1f6f0] text-[#4b7957]" aria-hidden="true">
-                    <svg class="size-5" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8m0-5v5h5m4-1v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
+            <div class="border-b border-[#edf0ec] px-5 py-4 sm:px-6">
+                <h2 id="recent-activity-heading" class="text-sm font-semibold text-[#26382c]">Recent system activity</h2>
+                <p class="mt-1 text-xs text-[#879188]">Latest account and operational events.</p>
             </div>
             @if ($recentActivity->isEmpty())
                 <div class="px-6 py-12 text-center">
-                    <span class="mx-auto grid size-11 place-items-center rounded-2xl bg-[#f1f6f0] text-[#4b7957]" aria-hidden="true">—</span>
-                    <p class="mt-3 text-sm font-semibold text-[#536258]">No activity recorded yet</p>
+                    <p class="text-sm font-semibold text-[#536258]">No activity recorded yet</p>
                     <p class="mt-1 text-xs text-[#879188]">Important system actions will appear here.</p>
                 </div>
             @else
                 <ol class="divide-y divide-[#edf0ec]">
                     @foreach ($recentActivity as $activity)
                         <li class="flex gap-3 px-5 py-3.5 sm:px-6">
-                            <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl bg-[#edf6ec] text-xs font-bold text-[#438055]" aria-hidden="true">
-                                {{ strtoupper(substr($activity->user?->name ?? 'S', 0, 1)) }}
-                            </span>
+                            <span class="mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl bg-[#edf6ec] text-xs font-bold text-[#438055]" aria-hidden="true">{{ strtoupper(substr($activity->user?->name ?? 'S', 0, 1)) }}</span>
                             <div class="min-w-0 flex-1">
                                 <p class="text-xs leading-5 text-[#44544a]">
                                     <span class="font-semibold text-[#2f4035]">{{ $activity->user?->name ?? 'System' }}</span>

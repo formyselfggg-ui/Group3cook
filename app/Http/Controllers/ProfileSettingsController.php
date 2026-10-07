@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -22,12 +23,7 @@ class ProfileSettingsController extends Controller
                 User::ROLE_SUPERVISOR => 'layouts.supervisor',
                 default => 'layouts.field',
             },
-            'roleLabel' => match ($user->role) {
-                User::ROLE_ADMIN => 'Administrator',
-                User::ROLE_OPERATIONS => 'Operations / Engineering',
-                User::ROLE_SUPERVISOR => 'Supervisor / Dispatcher',
-                default => 'Field personnel',
-            },
+            'roleLabel' => User::ROLES[$user->role] ?? 'Team Member',
             'dashboardRoute' => match ($user->role) {
                 User::ROLE_ADMIN => 'admin.dashboard',
                 User::ROLE_SUPERVISOR => 'supervisor.dashboard',
@@ -51,23 +47,29 @@ class ProfileSettingsController extends Controller
             ],
         ]);
 
-        $emailChanged = $user->email !== $validated['email'];
+        DB::transaction(function () use ($user, $validated): void {
+            $user->fill($validated);
+            $changedFields = array_keys($user->getDirty());
 
-        $user->fill($validated);
+            if ($changedFields === []) {
+                return;
+            }
 
-        if ($emailChanged) {
-            $user->email_verified_at = null;
-        }
+            if (in_array('email', $changedFields, true)) {
+                $user->email_verified_at = null;
+            }
 
-        $user->save();
+            $user->save();
 
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'profile_updated',
-            'record_type' => User::class,
-            'record_id' => $user->id,
-            'details' => 'Updated their profile details.',
-        ]);
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'profile_updated',
+                'record_type' => User::class,
+                'record_id' => $user->id,
+                'details' => 'Updated profile fields: '.implode(', ', $changedFields).'.',
+                'created_at' => now(),
+            ]);
+        });
 
         return redirect()->route('profile.edit')->with('status', 'Profile settings saved.');
     }
@@ -76,19 +78,23 @@ class ProfileSettingsController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:8', 'confirmed', 'different:current_password'],
         ]);
 
-        $user = $request->user();
-        $user->update(['password' => $validated['password']]);
+        DB::transaction(function () use ($request, $validated): void {
+            $user = $request->user();
+            $user->password = $validated['password'];
+            $user->save();
 
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'password_changed',
-            'record_type' => User::class,
-            'record_id' => $user->id,
-            'details' => 'Changed their account password.',
-        ]);
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'password_changed',
+                'record_type' => User::class,
+                'record_id' => $user->id,
+                'details' => 'Changed account password.',
+                'created_at' => now(),
+            ]);
+        });
 
         return redirect()->route('profile.edit')->with('status', 'Password changed successfully.');
     }

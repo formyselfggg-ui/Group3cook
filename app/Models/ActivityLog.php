@@ -10,20 +10,21 @@ class ActivityLog extends Model
 {
     public $timestamps = false;
 
-    protected function casts(): array
-    {
-        return [
-            'created_at' => 'datetime',
-        ];
-    }
-
     protected $fillable = [
         'user_id',
         'action',
         'record_type',
         'record_id',
         'details',
+        'created_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'datetime',
+        ];
+    }
 
     public function user(): BelongsTo
     {

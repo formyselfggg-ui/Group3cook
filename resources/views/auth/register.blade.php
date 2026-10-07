@@ -47,7 +47,6 @@
                         </ul>
                     </div>
                 @endif
-
                 <form class="mt-7 grid gap-4" method="POST" action="{{ route('register.store') }}">
                     @csrf
                     <div class="grid gap-2">

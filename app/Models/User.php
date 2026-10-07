@@ -23,6 +23,18 @@ class User extends Authenticatable
 
     public const ROLE_FIELD_PERSONNEL = 'field_personnel';
 
+    public const ROLES = [
+        self::ROLE_ADMIN => 'Administrator',
+        self::ROLE_OPERATIONS => 'Operations / Engineering',
+        self::ROLE_SUPERVISOR => 'Supervisor / Dispatcher',
+        self::ROLE_FIELD_PERSONNEL => 'Field personnel',
+    ];
+
+    public function createdWorkOrders(): HasMany
+    {
+        return $this->hasMany(WorkOrder::class, 'created_by_user_id');
+    }
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
