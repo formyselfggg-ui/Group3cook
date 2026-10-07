@@ -14,7 +14,9 @@ class AuthenticationTest extends TestCase
     public function test_guest_homepage_displays_the_sign_in_page(): void
     {
         $this->get('/')
-            ->assertOk()
+            ->assertRedirect(route('login'));
+
+        $this->get(route('login'))
             ->assertSee('Sign in to your account');
     }
 
@@ -23,7 +25,7 @@ class AuthenticationTest extends TestCase
         $response = $this->post(route('register.store'), [
             'name' => 'Jamie Crew',
             'email' => 'jamie@example.com',
-            'role' => 'field_personnel',
+            'role' => User::ROLE_FIELD_PERSONNEL,
             'password' => 'field-password-123',
             'password_confirmation' => 'field-password-123',
         ]);
@@ -34,7 +36,7 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseHas('registration_requests', [
             'email' => 'jamie@example.com',
             'status' => 'pending',
-            'requested_role' => 'field_personnel',
+            'requested_role' => User::ROLE_FIELD_PERSONNEL,
         ]);
         $this->assertTrue(password_verify(
             'field-password-123',
@@ -71,7 +73,7 @@ class AuthenticationTest extends TestCase
         $staff = User::factory()->create(['role' => 'supervisor']);
 
         $this->actingAs($staff)
-            ->post(route('admin.access-requests.approve', $registration), ['role' => 'supervisor'])
+            ->post(route('admin.access-requests.approve', $registration), ['role' => User::ROLE_SUPERVISOR])
             ->assertForbidden();
 
         $admin = User::factory()->create(['role' => 'admin']);
@@ -80,33 +82,33 @@ class AuthenticationTest extends TestCase
             ->get(route('admin.access-requests.index'))
             ->assertOk()
             ->assertSee('jamie@example.com')
-            ->assertSee('Approve & create');
+            ->assertSee('Approve');
 
         $this->actingAs($admin)
-            ->post(route('admin.access-requests.approve', $registration), ['role' => 'operations'])
+            ->post(route('admin.access-requests.approve', $registration), ['role' => User::ROLE_SUPERVISOR])
             ->assertRedirect()
             ->assertSessionHas('status');
 
         $this->assertDatabaseHas('users', [
             'email' => $registration->email,
-            'role' => 'operations',
+            'role' => User::ROLE_SUPERVISOR,
             'is_active' => true,
         ]);
         $this->assertDatabaseHas('registration_requests', [
             'id' => $registration->id,
             'status' => 'approved',
-            'reviewed_by' => $admin->id,
+            'reviewed_by_user_id' => $admin->id,
         ]);
         $this->assertDatabaseHas('activity_logs', [
             'user_id' => $admin->id,
-            'action' => 'account_approved',
+            'action' => 'registration_approved',
         ]);
 
         auth()->logout();
         $this->post(route('login'), [
             'email' => $registration->email,
             'password' => 'field-password-123',
-        ])->assertRedirect(route('dashboard'));
+        ])->assertRedirect(route('supervisor.dashboard'));
     }
 
     public function test_rejection_does_not_create_a_user_and_is_logged(): void
@@ -123,11 +125,11 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseHas('registration_requests', [
             'id' => $registration->id,
             'status' => 'rejected',
-            'reviewed_by' => $admin->id,
+            'reviewed_by_user_id' => $admin->id,
         ]);
         $this->assertDatabaseHas('activity_logs', [
             'user_id' => $admin->id,
-            'action' => 'account_request_rejected',
+            'action' => 'registration_rejected',
         ]);
     }
 

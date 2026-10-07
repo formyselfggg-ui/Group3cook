@@ -1,118 +1,96 @@
-@extends('layouts.guest')
+@extends($layout)
 
-@section('title', 'Profile settings · DASURECO Operations')
+@section('title', 'Profile settings · DASURECO')
 
-@section('body')
-<div class="workspace">
-    <header class="workspace-header">
-        <a class="workspace-brand" href="{{ route('dashboard') }}">
-            <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M13.4 2.8 5.7 13h5l-.5 8.2L18.4 11h-5.1l.1-8.2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
-            DASURECO <span style="color:#8c978f;font-weight:500">/ Profile settings</span>
-        </a>
-        <div class="workspace-user">
-            <a class="text-button" href="{{ route('dashboard') }}">Back to workspace</a>
-            <span>{{ $profile->name }} · {{ $roleLabel }}</span>
-            <form method="POST" action="{{ route('logout') }}">@csrf<button class="text-button" type="submit">Sign out</button></form>
+@section('content')
+<div class="mx-auto flex max-w-5xl flex-col gap-6">
+    <section class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+            <p class="text-xs font-bold uppercase tracking-[.16em] text-[#708775]">Your account</p>
+            <h1 class="mt-3 text-3xl font-semibold tracking-[-.045em] text-[#1a2a20] sm:text-4xl">Profile settings</h1>
+            <p class="mt-2 text-sm leading-6 text-[#78857b]">Update your personal information and keep your sign-in secure.</p>
         </div>
-    </header>
-    <main class="workspace-main profile-main">
-        @if (session('status'))
-            <div class="alert success-banner" role="status">{{ session('status') }}</div>
-        @endif
-        @if ($errors->any())
-            <div class="alert error" role="alert">{{ $errors->first() }}</div>
-        @endif
-        <section class="profile-overview" aria-label="Account overview">
-            <div class="profile-avatar" aria-hidden="true">{{ strtoupper(substr($profile->name, 0, 1)) }}</div>
-            <div class="profile-overview-copy">
-                <span class="eyebrow">Account settings</span>
-                <h1>{{ $profile->name }}</h1>
-                <p>{{ $profile->email }}</p>
-            </div>
-            <div class="profile-overview-meta">
-                <span class="profile-role">{{ $roleLabel }}</span>
-                @if ($profile->email_verified_at)
-                    <span class="profile-verification is-verified"><span aria-hidden="true"></span>Verified email</span>
-                @else
-                    <span class="profile-verification"><span aria-hidden="true"></span>Email not verified</span>
-                @endif
-            </div>
-        </section>
-        <div class="profile-page-heading">
-            <div>
-                <h2>Profile settings</h2>
-                <p>Update your contact details and keep your account secure.</p>
-            </div>
-            <span class="profile-security-note">
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 2.9 8.2 7 10 4.1-1.8 7-5.5 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Private to your account
-            </span>
-        </div>
-        <div class="settings-grid">
-            <section class="settings-card">
-                <div class="settings-card-heading">
-                    <span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 20c.5-3.1 3-5.2 6.5-5.2s6 2.1 6.5 5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-                    <span><h2>Personal information</h2><p>Manage the details associated with your account.</p></span>
+        <a class="inline-flex h-10 items-center justify-center rounded-xl border border-[#dce5dc] bg-white px-4 text-xs font-semibold text-[#4b6553]" href="{{ route($dashboardRoute) }}">Back to dashboard</a>
+    </section>
+
+    @if (session('status'))
+        <div class="rounded-xl border border-[#cde2cd] bg-[#f1f8ef] px-4 py-3 text-sm font-medium text-[#356947]" role="status">{{ session('status') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="rounded-xl border border-[#f0d2cc] bg-[#fff5f2] px-4 py-3 text-sm text-[#984c3d]" role="alert">{{ $errors->first() }}</div>
+    @endif
+
+    <section class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(17rem,.8fr)]">
+        <div class="flex flex-col gap-6">
+            <section class="overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]">
+                <div class="border-b border-[#edf0ec] px-5 py-5 sm:px-6">
+                    <h2 class="text-base font-semibold text-[#26382c]">Personal information</h2>
+                    <p class="mt-1 text-xs text-[#879188]">Update the name and email associated with your account.</p>
                 </div>
-                <form method="POST" action="{{ route('profile.update') }}" class="form-fields settings-form">
+                <form class="grid gap-5 px-5 py-5 sm:px-6" method="POST" action="{{ route('profile.update') }}">
                     @csrf
-                    @method('PUT')
-                    <div class="field">
-                        <label for="name">Full name</label>
-                        <input id="name" type="text" name="name" value="{{ old('name', $profile->name) }}" autocomplete="name" maxlength="255" required>
-                        @error('name')<span class="field-error">{{ $message }}</span>@enderror
+                    @method('PATCH')
+                    <div class="grid gap-2">
+                        <label class="text-xs font-semibold text-[#435448]" for="name">Full name</label>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="name" name="name" value="{{ old('name', $user->name) }}" maxlength="255" autocomplete="name" required>
+                        @error('name')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
-                    <div class="field">
-                        <label for="email">Work email</label>
-                        <input id="email" type="email" name="email" value="{{ old('email', $profile->email) }}" autocomplete="email" maxlength="255" required>
-                        @error('email')<span class="field-error">{{ $message }}</span>@enderror
-                        @if ($profile->email_verified_at)
-                            <span class="field-hint">Verified work email</span>
-                        @else
-                            <span class="field-hint">Email address not verified</span>
-                        @endif
+                    <div class="grid gap-2">
+                        <label class="text-xs font-semibold text-[#435448]" for="email">Work email</label>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="email" name="email" type="email" value="{{ old('email', $user->email) }}" maxlength="255" autocomplete="email" required>
+                        @error('email')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
-                    <div class="field">
-                        <label for="role">Assigned role</label>
-                        <input id="role" type="text" value="{{ $roleLabel }}" readonly aria-readonly="true">
-                        <span class="field-hint">Your role is managed by an administrator and cannot be changed here.</span>
-                    </div>
-                    <button class="submit-button" type="submit">
-                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 3.5h10.5L17 6v10.5H3V3.5h1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 3.5v5h7v-5M6 17v-5h8v5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
-                        Save changes
-                    </button>
+                    <button class="inline-flex h-11 w-fit items-center justify-center rounded-xl bg-[#176442] px-5 text-sm font-bold text-white hover:bg-[#105437]" type="submit">Save profile</button>
                 </form>
             </section>
-            <section class="settings-card">
-                <div class="settings-card-heading">
-                    <span class="settings-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10V7a4 4 0 1 1 8 0v3m-4 4v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-                    <span><h2>Change password</h2><p>Use a strong password that you don't reuse elsewhere.</p></span>
+
+            <section class="overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]">
+                <div class="border-b border-[#edf0ec] px-5 py-5 sm:px-6">
+                    <h2 class="text-base font-semibold text-[#26382c]">Change password</h2>
+                    <p class="mt-1 text-xs text-[#879188]">Confirm your current password before choosing a new one.</p>
                 </div>
-                <form method="POST" action="{{ route('profile.password.update') }}" class="form-fields settings-form">
+                <form class="grid gap-5 px-5 py-5 sm:px-6" method="POST" action="{{ route('profile.password.update') }}">
                     @csrf
                     @method('PUT')
-                    <div class="field">
-                        <label for="current_password">Current password</label>
-                        <input id="current_password" type="password" name="current_password" autocomplete="current-password" required>
-                        @error('current_password')<span class="field-error">{{ $message }}</span>@enderror
+                    <div class="grid gap-2">
+                        <label class="text-xs font-semibold text-[#435448]" for="current_password">Current password</label>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="current_password" name="current_password" type="password" autocomplete="current-password" required>
+                        @error('current_password')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
-                    <div class="field">
-                        <label for="password">New password</label>
-                        <input id="password" type="password" name="password" autocomplete="new-password" minlength="8" required>
-                        @error('password')<span class="field-error">{{ $message }}</span>@enderror
-                        <span class="field-hint">Use at least 8 characters.</span>
+                    <div class="grid gap-2">
+                        <label class="text-xs font-semibold text-[#435448]" for="password">New password</label>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+                        @error('password')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
-                    <div class="field">
-                        <label for="password_confirmation">Confirm new password</label>
-                        <input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" minlength="8" required>
+                    <div class="grid gap-2">
+                        <label class="text-xs font-semibold text-[#435448]" for="password_confirmation">Confirm new password</label>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required>
                     </div>
-                    <button class="submit-button" type="submit">
-                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3.5" y="8" width="13" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 8V6a3.5 3.5 0 1 1 7 0v2m-3.5 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                        Update password
-                    </button>
+                    <button class="inline-flex h-11 w-fit items-center justify-center rounded-xl border border-[#cbdcca] bg-white px-5 text-sm font-bold text-[#356947] hover:bg-[#f1f8ef]" type="submit">Change password</button>
                 </form>
             </section>
         </div>
-    </main>
+
+        <aside class="h-fit overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]">
+            <div class="flex items-center gap-4 border-b border-[#edf0ec] px-5 py-5">
+                <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-[#eaf5eb] text-lg font-bold text-[#316447]" aria-hidden="true">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                <span class="min-w-0">
+                    <span class="block truncate text-sm font-semibold text-[#26382c]">{{ $user->name }}</span>
+                    <span class="mt-1 block truncate text-xs text-[#879188]">{{ $user->email }}</span>
+                </span>
+            </div>
+            <dl class="grid gap-3 px-5 py-5">
+                <div class="grid gap-1">
+                    <dt class="text-[10px] font-bold uppercase tracking-[.12em] text-[#879188]">Workspace role</dt>
+                    <dd class="text-sm font-semibold text-[#344239]">{{ $roleLabel }}</dd>
+                </div>
+                <div class="grid gap-1">
+                    <dt class="text-[10px] font-bold uppercase tracking-[.12em] text-[#879188]">Account status</dt>
+                    <dd class="text-sm font-semibold {{ $user->is_active ? 'text-[#356947]' : 'text-[#a64b39]' }}">{{ $user->is_active ? 'Active' : 'Inactive' }}</dd>
+                </div>
+                <p class="border-t border-[#edf0ec] pt-4 text-xs leading-5 text-[#78857b]">Your role and account status are managed by an administrator and cannot be changed here.</p>
+            </dl>
+        </aside>
+    </section>
 </div>
 @endsection

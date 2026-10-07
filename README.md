@@ -14,10 +14,12 @@ A Laravel application for coordinating field operations, work orders, assets, ma
 
 ## Account access
 
-Team members can submit a request from **Request access** on the sign-in page. A request is not a user account and cannot sign in until an administrator approves it. New requests are reviewed at `/admin/access-requests`; an administrator selects the account's role when approving. Rejecting a request never creates an account.
+Team members can submit a request from **Request access** on the sign-in page. A request is not a user account and cannot sign in until an administrator approves it. New requests are reviewed at `/admin/registration-requests`; an administrator selects the account's role when approving. Rejecting a request never creates an account.
 
 Available roles are Administrator, Operations / Engineering Staff, Supervisor / Dispatcher, and Field Personnel. Applicants cannot request the Administrator role. Administrative routes are protected by server-side role middleware.
 
+Signed-in users can update their name and email or change their password through **Profile settings**. Account role and activation status remain administrator-managed.
+
 ## Tests
 
-Run the authentication and account-approval tests with `php artisan test --filter=AuthenticationTest`.
+Run all tests with `php artisan test`. Authentication and account-approval tests can be run with `php artisan test --filter=AuthenticationTest`.

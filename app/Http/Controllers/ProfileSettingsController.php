@@ -14,9 +14,21 @@ class ProfileSettingsController extends Controller
 {
     public function edit(Request $request): View
     {
+        $user = $request->user();
+
         return view('profile.edit', [
-            'profile' => $request->user(),
-            'roleLabel' => User::ROLES[$request->user()->role] ?? 'Team Member',
+            'user' => $user,
+            'layout' => match ($user->role) {
+                User::ROLE_ADMIN => 'layouts.admin',
+                User::ROLE_SUPERVISOR => 'layouts.supervisor',
+                default => 'layouts.field',
+            },
+            'roleLabel' => User::ROLES[$user->role] ?? 'Team Member',
+            'dashboardRoute' => match ($user->role) {
+                User::ROLE_ADMIN => 'admin.dashboard',
+                User::ROLE_SUPERVISOR => 'supervisor.dashboard',
+                default => 'field.dashboard',
+            },
         ]);
     }
 
@@ -25,7 +37,14 @@ class ProfileSettingsController extends Controller
         $user = $request->user();
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                Rule::unique(User::class)->ignore($user->id),
+            ],
         ]);
 
         DB::transaction(function () use ($user, $validated): void {
@@ -44,7 +63,7 @@ class ProfileSettingsController extends Controller
 
             ActivityLog::create([
                 'user_id' => $user->id,
-                'action' => 'user_profile_updated',
+                'action' => 'profile_updated',
                 'record_type' => User::class,
                 'record_id' => $user->id,
                 'details' => 'Updated profile fields: '.implode(', ', $changedFields).'.',
@@ -52,7 +71,7 @@ class ProfileSettingsController extends Controller
             ]);
         });
 
-        return redirect()->route('profile.edit')->with('status', 'Your profile has been updated.');
+        return redirect()->route('profile.edit')->with('status', 'Profile settings saved.');
     }
 
     public function updatePassword(Request $request): RedirectResponse
@@ -69,7 +88,7 @@ class ProfileSettingsController extends Controller
 
             ActivityLog::create([
                 'user_id' => $user->id,
-                'action' => 'user_password_changed',
+                'action' => 'password_changed',
                 'record_type' => User::class,
                 'record_id' => $user->id,
                 'details' => 'Changed account password.',
@@ -77,6 +96,6 @@ class ProfileSettingsController extends Controller
             ]);
         });
 
-        return redirect()->route('profile.edit')->with('status', 'Your password has been changed.');
+        return redirect()->route('profile.edit')->with('status', 'Password changed successfully.');
     }
 }

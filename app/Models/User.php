@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -14,12 +15,31 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    public const ROLE_ADMIN = 'admin';
+
+    public const ROLE_OPERATIONS = 'operations';
+
+    public const ROLE_SUPERVISOR = 'supervisor';
+
+    public const ROLE_FIELD_PERSONNEL = 'field_personnel';
+
     public const ROLES = [
-        'admin' => 'Administrator',
-        'operations' => 'Operations / Engineering Staff',
-        'supervisor' => 'Supervisor / Dispatcher',
-        'field_personnel' => 'Field Personnel',
+        self::ROLE_ADMIN => 'Administrator',
+        self::ROLE_OPERATIONS => 'Operations / Engineering Staff',
+        self::ROLE_SUPERVISOR => 'Supervisor / Dispatcher',
+        self::ROLE_FIELD_PERSONNEL => 'Field Personnel',
     ];
+
+    public function assignedWorkOrders(): HasMany
+    {
+        return $this->hasMany(WorkOrder::class, 'assigned_personnel_id');
+    }
+
+    public function createdWorkOrders(): HasMany
+    {
+        return $this->hasMany(WorkOrder::class, 'created_by_user_id');
+    }
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 

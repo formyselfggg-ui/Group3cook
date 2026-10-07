@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Hidden(['password'])]
 class RegistrationRequest extends Model
 {
-    protected $hidden = ['password'];
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_APPROVED = 'approved';
+
+    public const STATUS_REJECTED = 'rejected';
 
     protected $fillable = [
         'name',
@@ -16,7 +22,9 @@ class RegistrationRequest extends Model
         'requested_role',
         'status',
         'reviewed_by',
+        'reviewed_by_user_id',
         'reviewed_at',
+        'user_id',
     ];
 
     protected function casts(): array
@@ -27,8 +35,18 @@ class RegistrationRequest extends Model
         ];
     }
 
+    public function reviewedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by_user_id');
+    }
+
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
