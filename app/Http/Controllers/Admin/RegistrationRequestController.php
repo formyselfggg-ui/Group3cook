@@ -30,7 +30,11 @@ class RegistrationRequestController extends Controller
         $validated = $request->validate([
             'role' => [
                 'required',
-                Rule::in([User::ROLE_SUPERVISOR, User::ROLE_FIELD_PERSONNEL]),
+                Rule::in([
+                    User::ROLE_OPERATIONS,
+                    User::ROLE_SUPERVISOR,
+                    User::ROLE_FIELD_PERSONNEL,
+                ]),
             ],
         ]);
 

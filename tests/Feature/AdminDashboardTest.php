@@ -102,21 +102,20 @@ class AdminDashboardTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_roles_without_a_dashboard_are_not_signed_in(): void
+    public function test_operations_staff_are_redirected_to_the_engineering_dashboard(): void
     {
         $operationsUser = User::factory()->create([
             'role' => User::ROLE_OPERATIONS,
-            'password' => 'supervisor-password',
+            'password' => 'operations-password',
         ]);
 
-        $this->from(route('login'))
-            ->post(route('login'), [
-                'email' => $operationsUser->email,
-                'password' => 'supervisor-password',
-            ])
-            ->assertRedirect(route('login'))
-            ->assertSessionHasErrors('email');
+        $this->post(route('login'), [
+            'email' => $operationsUser->email,
+            'password' => 'operations-password',
+        ])->assertRedirect(route('operations.dashboard'));
 
-        $this->assertGuest();
+        $this->get(route('operations.dashboard'))
+            ->assertSee('Engineering dashboard')
+            ->assertSee('Register work requirement');
     }
 }

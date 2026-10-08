@@ -6,6 +6,9 @@ use App\Http\Controllers\Auth\FieldLoginController;
 use App\Http\Controllers\Auth\RegistrationRequestController;
 use App\Http\Controllers\Field\WorkOrderDashboardController;
 use App\Http\Controllers\Field\WorkOrderProgressController;
+use App\Http\Controllers\Operations\AssetController as OperationsAssetController;
+use App\Http\Controllers\Operations\EngineeringDashboardController;
+use App\Http\Controllers\Operations\WorkOrderController as OperationsWorkOrderController;
 use App\Http\Controllers\ProfileSettingsController;
 use App\Http\Controllers\Supervisor\SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\WorkOrderController as SupervisorWorkOrderController;
@@ -20,8 +23,10 @@ Route::get('/', function () {
 
     $dashboardRoute = match (Auth::user()->role) {
         User::ROLE_ADMIN => 'admin.dashboard',
+        User::ROLE_OPERATIONS => 'operations.dashboard',
         User::ROLE_SUPERVISOR => 'supervisor.dashboard',
-        default => 'field.dashboard',
+        User::ROLE_FIELD_PERSONNEL => 'field.dashboard',
+        default => 'login',
     };
 
     return redirect()->route($dashboardRoute);
@@ -71,9 +76,21 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     ])->name('admin.access-requests.reject');
 });
 
+Route::middleware(['auth', 'operations'])->prefix('engineering')->name('operations.')->group(function (): void {
+    Route::get('/dashboard', EngineeringDashboardController::class)->name('dashboard');
+    Route::get('/reports/work-orders.csv', [EngineeringDashboardController::class, 'export'])
+        ->name('reports.export');
+    Route::post('/work-orders', [OperationsWorkOrderController::class, 'store'])
+        ->name('work-orders.store');
+    Route::post('/assets', [OperationsAssetController::class, 'store'])->name('assets.store');
+    Route::patch('/assets/{asset}', [OperationsAssetController::class, 'update'])->name('assets.update');
+});
+
 Route::middleware(['auth', 'supervisor'])->prefix('supervisor')->name('supervisor.')->group(function (): void {
     Route::get('/dashboard', SupervisorDashboardController::class)->name('dashboard');
     Route::post('/work-orders', [SupervisorWorkOrderController::class, 'store'])->name('work-orders.store');
+    Route::post('/work-orders/{workOrder}/assign', [SupervisorWorkOrderController::class, 'assign'])
+        ->name('work-orders.assign');
     Route::post('/work-orders/{workOrder}/review', [SupervisorWorkOrderController::class, 'review'])
         ->name('work-orders.review');
     Route::post('/work-orders/{workOrder}/close', [SupervisorWorkOrderController::class, 'close'])

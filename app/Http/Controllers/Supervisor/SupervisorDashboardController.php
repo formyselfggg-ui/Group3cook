@@ -66,6 +66,13 @@ class SupervisorDashboardController extends Controller
             ],
             'fieldPersonnel' => $fieldPersonnel,
             'assets' => Asset::query()->orderBy('asset_number')->get(),
+            'unassignedWorkOrders' => WorkOrder::query()
+                ->with('asset:id,asset_number,name')
+                ->where('status', WorkOrder::STATUS_PENDING)
+                ->whereNull('assigned_personnel_id')
+                ->latest()
+                ->limit(10)
+                ->get(),
         ]);
     }
 }
