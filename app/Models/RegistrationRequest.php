@@ -21,7 +21,6 @@ class RegistrationRequest extends Model
         'password',
         'requested_role',
         'status',
-        'reviewed_by',
         'reviewed_by_user_id',
         'reviewed_at',
         'user_id',
@@ -38,11 +37,6 @@ class RegistrationRequest extends Model
     public function reviewedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by_user_id');
-    }
-
-    public function reviewer(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     public function user(): BelongsTo

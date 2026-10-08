@@ -7,12 +7,10 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_home_redirects_guests_to_field_sign_in(): void
+    public function test_the_homepage_redirects_guests_to_the_application_sign_in(): void
     {
-        $this->get('/')
-            ->assertRedirect(route('login'));
+        $response = $this->get('/');
+
+        $response->assertRedirect(route('login'));
     }
 }

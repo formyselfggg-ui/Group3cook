@@ -10,14 +10,16 @@
             <h1 class="mt-3 text-3xl font-semibold tracking-[-.045em] text-[#1a2a20] sm:text-4xl">Profile settings</h1>
             <p class="mt-2 text-sm leading-6 text-[#78857b]">Update your personal information and keep your sign-in secure.</p>
         </div>
-        <a class="inline-flex h-10 items-center justify-center rounded-xl border border-[#dce5dc] bg-white px-4 text-xs font-semibold text-[#4b6553]" href="{{ route($dashboardRoute) }}">Back to dashboard</a>
+        <a class="inline-flex h-10 items-center justify-center rounded-xl border border-[#dce5dc] bg-white px-4 text-xs font-semibold text-[#4b6553] transition hover:border-[#b8d1bb] hover:bg-[#f5faf4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="{{ route($dashboardRoute) }}">Back to dashboard</a>
     </section>
 
     @if (session('status'))
         <div class="rounded-xl border border-[#cde2cd] bg-[#f1f8ef] px-4 py-3 text-sm font-medium text-[#356947]" role="status">{{ session('status') }}</div>
     @endif
     @if ($errors->any())
-        <div class="rounded-xl border border-[#f0d2cc] bg-[#fff5f2] px-4 py-3 text-sm text-[#984c3d]" role="alert">{{ $errors->first() }}</div>
+        <div class="rounded-xl border border-[#f0d2cc] bg-[#fff5f2] px-4 py-3 text-sm text-[#984c3d]" role="alert">
+            <p class="font-semibold">Please check the highlighted fields.</p>
+        </div>
     @endif
 
     <section class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(17rem,.8fr)]">
@@ -32,15 +34,17 @@
                     @method('PATCH')
                     <div class="grid gap-2">
                         <label class="text-xs font-semibold text-[#435448]" for="name">Full name</label>
-                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="name" name="name" value="{{ old('name', $user->name) }}" maxlength="255" autocomplete="name" required>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none transition placeholder:text-[#a0aaa1] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="name" name="name" value="{{ old('name', $user->name) }}" maxlength="255" autocomplete="name" required>
                         @error('name')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
                     <div class="grid gap-2">
                         <label class="text-xs font-semibold text-[#435448]" for="email">Work email</label>
-                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="email" name="email" type="email" value="{{ old('email', $user->email) }}" maxlength="255" autocomplete="email" required>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none transition placeholder:text-[#a0aaa1] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="email" name="email" type="email" value="{{ old('email', $user->email) }}" maxlength="255" autocomplete="email" required>
                         @error('email')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
-                    <button class="inline-flex h-11 w-fit items-center justify-center rounded-xl bg-[#176442] px-5 text-sm font-bold text-white hover:bg-[#105437]" type="submit">Save profile</button>
+                    <div>
+                        <button class="inline-flex h-11 items-center justify-center rounded-xl bg-[#176442] px-5 text-sm font-bold text-white transition hover:bg-[#105437] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" type="submit">Save profile</button>
+                    </div>
                 </form>
             </section>
 
@@ -54,19 +58,21 @@
                     @method('PUT')
                     <div class="grid gap-2">
                         <label class="text-xs font-semibold text-[#435448]" for="current_password">Current password</label>
-                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="current_password" name="current_password" type="password" autocomplete="current-password" required>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none transition focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="current_password" name="current_password" type="password" autocomplete="current-password" required>
                         @error('current_password')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
                     <div class="grid gap-2">
                         <label class="text-xs font-semibold text-[#435448]" for="password">New password</label>
-                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none transition focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
                         @error('password')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
                     <div class="grid gap-2">
                         <label class="text-xs font-semibold text-[#435448]" for="password_confirmation">Confirm new password</label>
-                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-3 text-sm text-[#344239] outline-none transition focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required>
                     </div>
-                    <button class="inline-flex h-11 w-fit items-center justify-center rounded-xl border border-[#cbdcca] bg-white px-5 text-sm font-bold text-[#356947] hover:bg-[#f1f8ef]" type="submit">Change password</button>
+                    <div>
+                        <button class="inline-flex h-11 items-center justify-center rounded-xl border border-[#cbdcca] bg-white px-5 text-sm font-bold text-[#356947] transition hover:bg-[#f1f8ef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" type="submit">Change password</button>
+                    </div>
                 </form>
             </section>
         </div>
@@ -88,7 +94,7 @@
                     <dt class="text-[10px] font-bold uppercase tracking-[.12em] text-[#879188]">Account status</dt>
                     <dd class="text-sm font-semibold {{ $user->is_active ? 'text-[#356947]' : 'text-[#a64b39]' }}">{{ $user->is_active ? 'Active' : 'Inactive' }}</dd>
                 </div>
-                <p class="border-t border-[#edf0ec] pt-4 text-xs leading-5 text-[#78857b]">Your role and account status are managed by an administrator and cannot be changed here.</p>
+                <p class="border-t border-[#edf0ec] pt-4 text-xs leading-5 text-[#78857b]">Your role and account status are managed by an administrator and cannot be changed from profile settings.</p>
             </dl>
         </aside>
     </section>

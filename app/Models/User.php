@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'is_active'])]
+#[Fillable(['name', 'email', 'password', 'role', 'is_active', 'email_verified_at', 'remember_token'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -25,15 +25,10 @@ class User extends Authenticatable
 
     public const ROLES = [
         self::ROLE_ADMIN => 'Administrator',
-        self::ROLE_OPERATIONS => 'Operations / Engineering Staff',
+        self::ROLE_OPERATIONS => 'Operations / Engineering',
         self::ROLE_SUPERVISOR => 'Supervisor / Dispatcher',
-        self::ROLE_FIELD_PERSONNEL => 'Field Personnel',
+        self::ROLE_FIELD_PERSONNEL => 'Field personnel',
     ];
-
-    public function assignedWorkOrders(): HasMany
-    {
-        return $this->hasMany(WorkOrder::class, 'assigned_personnel_id');
-    }
 
     public function createdWorkOrders(): HasMany
     {
@@ -55,5 +50,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function assignedWorkOrders(): HasMany
+    {
+        return $this->hasMany(WorkOrder::class, 'assigned_personnel_id');
     }
 }

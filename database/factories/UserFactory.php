@@ -32,6 +32,8 @@ class UserFactory extends Factory
             'role' => User::ROLE_FIELD_PERSONNEL,
             'is_active' => true,
             'remember_token' => Str::random(10),
+            'role' => User::ROLE_FIELD_PERSONNEL,
+            'is_active' => true,
         ];
     }
 
