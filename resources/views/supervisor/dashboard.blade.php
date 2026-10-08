@@ -53,6 +53,43 @@
         @endforeach
     </section>
 
+    @if ($unassignedWorkOrders->isNotEmpty())
+        <section class="overflow-hidden rounded-2xl border border-[#dce8da] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]">
+            <div class="border-b border-[#edf0ec] px-5 py-4 sm:px-6">
+                <h2 class="text-sm font-semibold text-[#24352a]">Engineering work requirements · ready to assign</h2>
+                <p class="mt-1 text-xs text-[#879188]">Assign a field crew and schedule for each requirement registered by Engineering.</p>
+            </div>
+            <div class="divide-y divide-[#edf0ec]">
+                @foreach ($unassignedWorkOrders as $workOrder)
+                    <article class="flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between sm:px-6">
+                        <div class="min-w-0">
+                            <p class="font-mono text-[11px] font-semibold text-[#77857b]">{{ $workOrder->work_order_number }} · {{ $workOrder->category }} · {{ $workOrder->priority }}</p>
+                            <h3 class="mt-1 text-sm font-semibold text-[#26372c]">{{ $workOrder->title }}</h3>
+                            @if ($workOrder->asset)
+                                <p class="mt-1 text-xs text-[#78857b]">Asset: {{ $workOrder->asset->asset_number }} · {{ $workOrder->asset->name }}</p>
+                            @endif
+                        </div>
+                        <form class="grid w-full gap-2 sm:grid-cols-[minmax(12rem,1fr)_minmax(12rem,1fr)_auto] lg:max-w-3xl" method="POST" action="{{ route('supervisor.work-orders.assign', $workOrder) }}">
+                            @csrf
+                            <label class="grid gap-1 text-[10px] font-bold uppercase tracking-wide text-[#78857b]">Field personnel
+                                <select class="h-10 rounded-lg border border-[#dce4dc] bg-white px-3 text-xs font-medium normal-case tracking-normal text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" name="assigned_personnel_id" required>
+                                    <option value="">Select a crew member</option>
+                                    @foreach ($fieldPersonnel as $person)
+                                        <option value="{{ $person->id }}">{{ $person->name }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            <label class="grid gap-1 text-[10px] font-bold uppercase tracking-wide text-[#78857b]">Schedule
+                                <input class="h-10 rounded-lg border border-[#dce4dc] bg-white px-3 text-xs font-medium normal-case tracking-normal text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" type="datetime-local" name="scheduled_at">
+                            </label>
+                            <button class="mt-auto inline-flex h-10 items-center justify-center rounded-lg bg-[#176442] px-4 text-xs font-bold text-white transition hover:bg-[#105437] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" type="submit">Assign</button>
+                        </form>
+                    </article>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
     <section class="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
         <div class="flex min-w-0 flex-col gap-6">
             <details class="group overflow-hidden rounded-2xl border border-[#dce8da] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]" @if ($errors->any()) open @endif>

@@ -17,6 +17,46 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class WorkOrderController extends Controller
 {
+    public function assign(Request $request, WorkOrder $workOrder): RedirectResponse
+    {
+        $validated = $request->validate([
+            'assigned_personnel_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where('role', User::ROLE_FIELD_PERSONNEL)->where('is_active', true),
+            ],
+            'scheduled_at' => ['nullable', 'date'],
+        ]);
+
+        DB::transaction(function () use ($request, $workOrder, $validated): void {
+            $workOrder = WorkOrder::query()->lockForUpdate()->findOrFail($workOrder->id);
+
+            if ($workOrder->status !== WorkOrder::STATUS_PENDING || $workOrder->assigned_personnel_id !== null) {
+                throw ValidationException::withMessages([
+                    'work_order' => 'Only unassigned pending work requirements can be assigned.',
+                ]);
+            }
+
+            $workOrder->update([
+                'assigned_personnel_id' => $validated['assigned_personnel_id'],
+                'date_assigned' => now(),
+                'scheduled_at' => $validated['scheduled_at'] ?? null,
+                'status' => WorkOrder::STATUS_ASSIGNED,
+            ]);
+
+            ActivityLog::create([
+                'user_id' => $request->user()->id,
+                'action' => 'field_personnel_assigned',
+                'record_type' => WorkOrder::class,
+                'record_id' => $workOrder->id,
+                'details' => 'Assigned work order '.$workOrder->work_order_number.' to '.$workOrder->assignedPersonnel->name.'.',
+            ]);
+        });
+
+        return redirect()->route('supervisor.dashboard')
+            ->with('status', 'Work requirement assigned to field personnel.');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([

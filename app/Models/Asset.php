@@ -9,6 +9,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Asset extends Model
 {
+    public const STATUSES = [
+        'active' => 'Active',
+        'under_maintenance' => 'Under maintenance',
+        'damaged' => 'Damaged',
+        'retired' => 'Retired',
+    ];
+
     protected $fillable = [
         'asset_number',
         'asset_type',

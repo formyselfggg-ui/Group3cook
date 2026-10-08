@@ -35,6 +35,7 @@ class FieldLoginController extends Controller
 
         if (! in_array(Auth::user()->role, [
             User::ROLE_ADMIN,
+            User::ROLE_OPERATIONS,
             User::ROLE_SUPERVISOR,
             User::ROLE_FIELD_PERSONNEL,
         ], true)) {
@@ -66,8 +67,10 @@ class FieldLoginController extends Controller
     {
         return match ($user->role) {
             User::ROLE_ADMIN => 'admin.dashboard',
+            User::ROLE_OPERATIONS => 'operations.dashboard',
             User::ROLE_SUPERVISOR => 'supervisor.dashboard',
-            default => 'field.dashboard',
+            User::ROLE_FIELD_PERSONNEL => 'field.dashboard',
+            default => 'login',
         };
     }
 }

@@ -111,6 +111,31 @@ class AuthenticationTest extends TestCase
         ])->assertRedirect(route('supervisor.dashboard'));
     }
 
+    public function test_admin_can_approve_an_operations_and_engineering_account(): void
+    {
+        $registration = $this->createRegistrationRequest();
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.registration-requests.approve', $registration), [
+                'role' => User::ROLE_OPERATIONS,
+            ])
+            ->assertRedirect(route('admin.registration-requests'))
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('users', [
+            'email' => $registration->email,
+            'role' => User::ROLE_OPERATIONS,
+            'is_active' => true,
+        ]);
+
+        auth()->logout();
+        $this->post(route('login'), [
+            'email' => $registration->email,
+            'password' => 'field-password-123',
+        ])->assertRedirect(route('operations.dashboard'));
+    }
+
     public function test_rejection_does_not_create_a_user_and_is_logged(): void
     {
         $registration = $this->createRegistrationRequest();

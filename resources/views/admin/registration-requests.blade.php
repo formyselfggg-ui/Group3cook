@@ -49,6 +49,7 @@
                                     <select class="h-10 rounded-lg border border-[#dce4dc] bg-white px-3 text-xs font-medium normal-case tracking-normal text-[#344239] outline-none focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" name="role" required>
                                         <option value="field_personnel" @selected($registrationRequest->requested_role === 'field_personnel')>Field personnel</option>
                                         <option value="supervisor" @selected($registrationRequest->requested_role === 'supervisor')>Supervisor / Dispatcher</option>
+                                        <option value="operations">Operations / Engineering Staff</option>
                                     </select>
                                 </label>
                                 <button class="inline-flex h-10 items-center justify-center rounded-lg bg-[#176442] px-4 text-xs font-bold text-white transition hover:bg-[#105437] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" type="submit">Approve</button>
