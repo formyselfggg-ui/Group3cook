@@ -18,13 +18,21 @@ class AdminDashboardController extends Controller
             ->groupBy('role')
             ->pluck('total', 'role');
 
+        $workOrdersByStatus = WorkOrder::query()
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
         return view('admin.dashboard', [
             'totalUsers' => User::query()->count(),
             'activeUsers' => User::query()->where('is_active', true)->count(),
+            'inactiveUsers' => User::query()->where('is_active', false)->count(),
             'pendingRegistrationRequests' => RegistrationRequest::query()
                 ->where('status', RegistrationRequest::STATUS_PENDING)
                 ->count(),
             'usersByRole' => $usersByRole,
+            'workOrdersByStatus' => $workOrdersByStatus,
+            'workOrderStatuses' => WorkOrder::STATUSES,
             'roleLabels' => [
                 User::ROLE_ADMIN => 'Administrators',
                 User::ROLE_OPERATIONS => 'Operations / Engineering',

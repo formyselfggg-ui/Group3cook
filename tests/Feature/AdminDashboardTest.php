@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\ActivityLog;
 use App\Models\User;
+use App\Models\WorkOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -63,9 +64,31 @@ class AdminDashboardTest extends TestCase
             ->assertSee('Active users')
             ->assertSee('Administrators')
             ->assertSee('Field Personnel')
+            ->assertSee('Team composition')
+            ->assertSee('Work order pipeline')
             ->assertSee('Recent system activity')
             ->assertSee('Admin overview activity test.')
             ->assertSee('Test Admin Activity');
+    }
+
+    public function test_admin_overview_summarizes_work_orders_by_status(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        WorkOrder::factory()->create(['status' => WorkOrder::STATUS_ASSIGNED]);
+        WorkOrder::factory()->create(['status' => WorkOrder::STATUS_IN_PROGRESS]);
+        WorkOrder::factory()->create(['status' => WorkOrder::STATUS_IN_PROGRESS]);
+        WorkOrder::factory()->create(['status' => WorkOrder::STATUS_COMPLETED]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $this->assertSame(4, $response->viewData('totalWorkOrders'));
+        $this->assertSame(1, $response->viewData('workOrdersByStatus')->get(WorkOrder::STATUS_ASSIGNED));
+        $this->assertSame(2, $response->viewData('workOrdersByStatus')->get(WorkOrder::STATUS_IN_PROGRESS));
+        $this->assertSame(1, $response->viewData('workOrdersByStatus')->get(WorkOrder::STATUS_COMPLETED));
+        $response->assertSee('Work order pipeline')
+            ->assertSee('Assigned')
+            ->assertSee('In Progress')
+            ->assertSee('Completed');
     }
 
     public function test_guest_is_redirected_to_sign_in_from_admin_dashboard(): void
