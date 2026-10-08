@@ -12,9 +12,7 @@ use App\Http\Controllers\Operations\WorkOrderController as OperationsWorkOrderCo
 use App\Http\Controllers\ProfileSettingsController;
 use App\Http\Controllers\Supervisor\SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\WorkOrderController;
-use App\Http\Middleware\RequireAdministrator;
 use App\Http\Middleware\RequireFieldPersonnel;
-use App\Http\Middleware\RequireSupervisor;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -81,14 +79,24 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     ])->name('admin.access-requests.reject');
 });
 
+Route::middleware(['auth', 'operations'])->prefix('operations')->name('operations.')->group(function (): void {
+    Route::get('/dashboard', EngineeringDashboardController::class)->name('dashboard');
+    Route::get('/reports/export', [EngineeringDashboardController::class, 'export'])->name('reports.export');
+    Route::post('/work-orders', [OperationsWorkOrderController::class, 'store'])->name('work-orders.store');
+    Route::post('/assets', [OperationsAssetController::class, 'store'])->name('assets.store');
+    Route::patch('/assets/{asset}', [OperationsAssetController::class, 'update'])->name('assets.update');
+});
+
 Route::middleware(['auth', 'supervisor'])->prefix('supervisor')->name('supervisor.')->group(function (): void {
     Route::get('/dashboard', SupervisorDashboardController::class)->name('dashboard');
-    Route::post('/work-orders', [SupervisorWorkOrderController::class, 'store'])->name('work-orders.store');
-    Route::post('/work-orders/{workOrder}/review', [SupervisorWorkOrderController::class, 'review'])
+    Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+    Route::post('/work-orders/{workOrder}/assign', [WorkOrderController::class, 'assign'])
+        ->name('work-orders.assign');
+    Route::post('/work-orders/{workOrder}/review', [WorkOrderController::class, 'review'])
         ->name('work-orders.review');
-    Route::post('/work-orders/{workOrder}/close', [SupervisorWorkOrderController::class, 'close'])
+    Route::post('/work-orders/{workOrder}/close', [WorkOrderController::class, 'close'])
         ->name('work-orders.close');
-    Route::get('/work-orders/{workOrder}/photos/{photo}', [SupervisorWorkOrderController::class, 'photo'])
+    Route::get('/work-orders/{workOrder}/photos/{photo}', [WorkOrderController::class, 'photo'])
         ->whereNumber('photo')
         ->name('work-orders.photos.show');
 });
