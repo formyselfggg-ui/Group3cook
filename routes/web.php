@@ -76,21 +76,9 @@ Route::middleware(['auth', 'admin'])->group(function (): void {
     ])->name('admin.access-requests.reject');
 });
 
-Route::middleware(['auth', 'operations'])->prefix('engineering')->name('operations.')->group(function (): void {
-    Route::get('/dashboard', EngineeringDashboardController::class)->name('dashboard');
-    Route::get('/reports/work-orders.csv', [EngineeringDashboardController::class, 'export'])
-        ->name('reports.export');
-    Route::post('/work-orders', [OperationsWorkOrderController::class, 'store'])
-        ->name('work-orders.store');
-    Route::post('/assets', [OperationsAssetController::class, 'store'])->name('assets.store');
-    Route::patch('/assets/{asset}', [OperationsAssetController::class, 'update'])->name('assets.update');
-});
-
 Route::middleware(['auth', 'supervisor'])->prefix('supervisor')->name('supervisor.')->group(function (): void {
     Route::get('/dashboard', SupervisorDashboardController::class)->name('dashboard');
     Route::post('/work-orders', [SupervisorWorkOrderController::class, 'store'])->name('work-orders.store');
-    Route::post('/work-orders/{workOrder}/assign', [SupervisorWorkOrderController::class, 'assign'])
-        ->name('work-orders.assign');
     Route::post('/work-orders/{workOrder}/review', [SupervisorWorkOrderController::class, 'review'])
         ->name('work-orders.review');
     Route::post('/work-orders/{workOrder}/close', [SupervisorWorkOrderController::class, 'close'])
