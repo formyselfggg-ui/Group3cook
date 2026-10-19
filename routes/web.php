@@ -11,8 +11,7 @@ use App\Http\Controllers\Operations\EngineeringDashboardController;
 use App\Http\Controllers\Operations\WorkOrderController as OperationsWorkOrderController;
 use App\Http\Controllers\ProfileSettingsController;
 use App\Http\Controllers\Supervisor\SupervisorDashboardController;
-use App\Http\Controllers\Supervisor\WorkOrderController;
-use App\Http\Middleware\RequireFieldPersonnel;
+use App\Http\Controllers\Supervisor\WorkOrderController as SupervisorWorkOrderController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -36,9 +35,7 @@ Route::get('/', function () {
 Route::get('/login', [FieldLoginController::class, 'create'])->name('login');
 
 Route::middleware('guest')->group(function (): void {
-    Route::post('/login', [FieldLoginController::class, 'store'])
-        ->middleware('throttle:5,1')
-        ->name('login.store');
+    Route::post('/login', [FieldLoginController::class, 'store'])->middleware('throttle:5,1');
     Route::get('/register', [RegistrationRequestController::class, 'create'])->name('register');
     Route::post('/register', [RegistrationRequestController::class, 'store'])
         ->middleware('throttle:5,1')
@@ -89,28 +86,24 @@ Route::middleware(['auth', 'operations'])->prefix('operations')->name('operation
 
 Route::middleware(['auth', 'supervisor'])->prefix('supervisor')->name('supervisor.')->group(function (): void {
     Route::get('/dashboard', SupervisorDashboardController::class)->name('dashboard');
-    Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
-    Route::post('/work-orders/{workOrder}/assign', [WorkOrderController::class, 'assign'])
+    Route::post('/work-orders', [SupervisorWorkOrderController::class, 'store'])->name('work-orders.store');
+    Route::post('/work-orders/{workOrder}/assign', [SupervisorWorkOrderController::class, 'assign'])
         ->name('work-orders.assign');
-    Route::post('/work-orders/{workOrder}/review', [WorkOrderController::class, 'review'])
+    Route::post('/work-orders/{workOrder}/review', [SupervisorWorkOrderController::class, 'review'])
         ->name('work-orders.review');
-    Route::post('/work-orders/{workOrder}/close', [WorkOrderController::class, 'close'])
+    Route::post('/work-orders/{workOrder}/close', [SupervisorWorkOrderController::class, 'close'])
         ->name('work-orders.close');
-    Route::get('/work-orders/{workOrder}/photos/{photo}', [WorkOrderController::class, 'photo'])
+    Route::get('/work-orders/{workOrder}/photos/{photo}', [SupervisorWorkOrderController::class, 'photo'])
         ->whereNumber('photo')
         ->name('work-orders.photos.show');
 });
 
-Route::middleware(['auth', RequireFieldPersonnel::class])
-    ->prefix('field')
-    ->name('field.')
-    ->group(function (): void {
-        Route::get('/', WorkOrderDashboardController::class)->name('dashboard');
-        Route::get('/dashboard', WorkOrderDashboardController::class)->name('dashboard.view');
-        Route::post('/work-orders/{workOrder}/start', [WorkOrderProgressController::class, 'start'])
-            ->name('work-orders.start');
-        Route::post('/work-orders/{workOrder}/submit', [WorkOrderProgressController::class, 'submit'])
-            ->name('work-orders.submit');
-        Route::post('/work-orders/{workOrder}/materials', [WorkOrderProgressController::class, 'recordMaterial'])
-            ->name('work-orders.materials.store');
-    });
+Route::middleware(['auth', 'field'])->group(function (): void {
+    Route::get('/field/dashboard', WorkOrderDashboardController::class)->name('field.dashboard');
+    Route::post('/field/work-orders/{workOrder}/start', [WorkOrderProgressController::class, 'start'])
+        ->name('field.work-orders.start');
+    Route::post('/field/work-orders/{workOrder}/submit', [WorkOrderProgressController::class, 'submit'])
+        ->name('field.work-orders.submit');
+    Route::post('/field/work-orders/{workOrder}/materials', [WorkOrderProgressController::class, 'recordMaterial'])
+        ->name('field.work-orders.materials.store');
+});
