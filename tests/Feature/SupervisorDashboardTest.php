@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\Asset;
 use App\Models\User;
 use App\Models\WorkOrder;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -37,6 +39,13 @@ class SupervisorDashboardTest extends TestCase
             'password' => 'supervisor-password',
         ])->assertRedirect(route('supervisor.dashboard'));
 
+        $summaryQueries = 0;
+        DB::listen(function (QueryExecuted $query) use (&$summaryQueries): void {
+            if (str_contains($query->sql, 'group by "status"')) {
+                $summaryQueries++;
+            }
+        });
+
         $response = $this->get(route('supervisor.dashboard'));
 
         $response->assertSee('Taylor Supervisor')
@@ -47,6 +56,7 @@ class SupervisorDashboardTest extends TestCase
             ->assertSee('Morgan Field');
         $this->assertSame(1, $response->viewData('counts')['in_progress']);
         $this->assertSame(1, $response->viewData('counts')['urgent']);
+        $this->assertSame(1, $summaryQueries);
     }
 
     public function test_field_personnel_cannot_access_supervisor_dashboard_or_create_work_orders(): void

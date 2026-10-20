@@ -5,8 +5,10 @@ namespace Tests\Feature;
 use App\Models\Material;
 use App\Models\User;
 use App\Models\WorkOrder;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -112,6 +114,13 @@ class FieldDashboardTest extends TestCase
             'title' => 'Private assignment',
         ]);
 
+        $summaryQueries = 0;
+        DB::listen(function (QueryExecuted $query) use (&$summaryQueries): void {
+            if (str_contains($query->sql, 'group by "status"')) {
+                $summaryQueries++;
+            }
+        });
+
         $response = $this->actingAs($fieldUser)
             ->get(route('field.dashboard'));
 
@@ -130,6 +139,7 @@ class FieldDashboardTest extends TestCase
             'completed' => 1,
             'urgent' => 1,
         ], $response->viewData('counts'));
+        $this->assertSame(1, $summaryQueries);
 
         $this->actingAs($fieldUser)
             ->get(route('field.dashboard', ['status' => WorkOrder::STATUS_IN_PROGRESS]))

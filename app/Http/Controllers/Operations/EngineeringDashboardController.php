@@ -19,12 +19,59 @@ class EngineeringDashboardController extends Controller
     {
         $filters = $this->validatedFilters($request);
         $workOrders = $this->filteredWorkOrders($filters)
-            ->with(['asset', 'assignedPersonnel', 'materialUsages.material'])
+            ->select([
+                'id',
+                'work_order_number',
+                'title',
+                'description',
+                'category',
+                'priority',
+                'assigned_personnel_id',
+                'asset_id',
+                'scheduled_at',
+                'status',
+                'work_performed',
+                'field_notes',
+                'created_at',
+            ])
+            ->with([
+                'asset:id,asset_number,name',
+                'assignedPersonnel:id,name',
+                'materialUsages:id,work_order_id,material_id,quantity',
+                'materialUsages.material:id,name,unit',
+            ])
             ->latest('created_at')
             ->paginate(10)
             ->withQueryString();
 
-        $allWorkOrders = WorkOrder::query();
+        $workOrderMetrics = WorkOrder::query()
+            ->select('status')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw(
+                'COUNT(CASE WHEN priority = ? AND status != ? THEN 1 END) as urgent_total',
+                [WorkOrder::PRIORITY_URGENT, WorkOrder::STATUS_COMPLETED],
+            )
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
+        $workOrdersByCategory = WorkOrder::query()
+            ->select('category')
+            ->selectRaw('COUNT(*) as work_orders_count')
+            ->groupBy('category')
+            ->orderByDesc('work_orders_count')
+            ->limit(6)
+            ->get();
+        $categories = WorkOrder::query()
+            ->select('category')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+        $assetsByStatus = Asset::query()
+            ->select('current_status')
+            ->selectRaw('COUNT(*) as assets_count')
+            ->groupBy('current_status')
+            ->get()
+            ->keyBy('current_status');
 
         return view('operations.dashboard', [
             'workOrders' => $workOrders,
@@ -35,7 +82,16 @@ class EngineeringDashboardController extends Controller
             'assets' => Asset::query()
                 ->with('workOrders:id,asset_id,work_order_number,category,status,completion_at')
                 ->orderBy('asset_number')
-                ->paginate(10, ['*'], 'asset_page')
+                ->paginate(10, [
+                    'id',
+                    'asset_number',
+                    'asset_type',
+                    'name',
+                    'serial_number',
+                    'current_status',
+                    'condition',
+                    'installed_on',
+                ], 'asset_page')
                 ->withQueryString(),
             'assetOptions' => Asset::query()
                 ->orderBy('asset_number')
@@ -45,34 +101,18 @@ class EngineeringDashboardController extends Controller
                 ->where('is_active', true)
                 ->orderBy('name')
                 ->get(['id', 'name']),
-            'categories' => WorkOrder::query()->select('category')->distinct()->orderBy('category')->pluck('category'),
+            'categories' => $categories,
             'counts' => [
-                'work_orders' => (clone $allWorkOrders)->count(),
-                'pending' => (clone $allWorkOrders)->where('status', WorkOrder::STATUS_PENDING)->count(),
-                'in_progress' => (clone $allWorkOrders)->where('status', WorkOrder::STATUS_IN_PROGRESS)->count(),
-                'completed' => (clone $allWorkOrders)->where('status', WorkOrder::STATUS_COMPLETED)->count(),
-                'urgent' => (clone $allWorkOrders)
-                    ->where('priority', WorkOrder::PRIORITY_URGENT)
-                    ->where('status', '!=', WorkOrder::STATUS_COMPLETED)
-                    ->count(),
-                'assets' => Asset::query()->count(),
-                'assets_under_maintenance' => Asset::query()
-                    ->where('current_status', 'under_maintenance')
-                    ->count(),
+                'work_orders' => (int) $workOrderMetrics->sum('total'),
+                'pending' => (int) ($workOrderMetrics->get(WorkOrder::STATUS_PENDING)->total ?? 0),
+                'in_progress' => (int) ($workOrderMetrics->get(WorkOrder::STATUS_IN_PROGRESS)->total ?? 0),
+                'completed' => (int) ($workOrderMetrics->get(WorkOrder::STATUS_COMPLETED)->total ?? 0),
+                'urgent' => (int) $workOrderMetrics->sum('urgent_total'),
+                'assets' => (int) $assetsByStatus->sum('assets_count'),
+                'assets_under_maintenance' => (int) ($assetsByStatus->get('under_maintenance')->assets_count ?? 0),
             ],
-            'workOrdersByCategory' => WorkOrder::query()
-                ->select('category')
-                ->selectRaw('COUNT(*) as work_orders_count')
-                ->groupBy('category')
-                ->orderByDesc('work_orders_count')
-                ->limit(6)
-                ->get(),
-            'assetsByStatus' => Asset::query()
-                ->select('current_status')
-                ->selectRaw('COUNT(*) as assets_count')
-                ->groupBy('current_status')
-                ->get()
-                ->keyBy('current_status'),
+            'workOrdersByCategory' => $workOrdersByCategory,
+            'assetsByStatus' => $assetsByStatus,
             'assetsByCondition' => Asset::query()
                 ->select('condition')
                 ->selectRaw('COUNT(*) as assets_count')
@@ -88,7 +128,20 @@ class EngineeringDashboardController extends Controller
                 ->limit(5)
                 ->get(),
             'recentMaintenance' => WorkOrder::query()
-                ->with(['asset:id,asset_number,name', 'assignedPersonnel:id,name', 'materialUsages.material'])
+                ->select([
+                    'id',
+                    'work_order_number',
+                    'category',
+                    'status',
+                    'asset_id',
+                    'assigned_personnel_id',
+                    'completion_at',
+                    'work_performed',
+                ])
+                ->with([
+                    'asset:id,asset_number,name',
+                    'assignedPersonnel:id,name',
+                ])
                 ->where('status', WorkOrder::STATUS_COMPLETED)
                 ->whereNotNull('asset_id')
                 ->latest('completion_at')
@@ -125,7 +178,27 @@ class EngineeringDashboardController extends Controller
             ], ',', '"', '', "\r\n");
 
             $workOrders = $this->filteredWorkOrders($filters)
-                ->with(['asset', 'assignedPersonnel', 'materialUsages.material'])
+                ->select([
+                    'id',
+                    'work_order_number',
+                    'title',
+                    'category',
+                    'priority',
+                    'status',
+                    'asset_id',
+                    'assigned_personnel_id',
+                    'created_at',
+                    'scheduled_at',
+                    'completion_at',
+                    'work_performed',
+                    'field_notes',
+                ])
+                ->with([
+                    'asset:id,asset_number',
+                    'assignedPersonnel:id,name',
+                    'materialUsages:id,work_order_id,material_id,quantity',
+                    'materialUsages.material:id,name,unit',
+                ])
                 ->orderBy('created_at')
                 ->lazy(200);
 

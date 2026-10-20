@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\ActivityLog;
 use App\Models\User;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AdminDashboardTest extends TestCase
@@ -56,8 +58,19 @@ class AdminDashboardTest extends TestCase
             'details' => 'Admin overview activity test.',
             'created_at' => now(),
         ]);
+        $userMetricQueries = 0;
+        $workOrderMetricQueries = 0;
+        DB::listen(function (QueryExecuted $query) use (&$userMetricQueries, &$workOrderMetricQueries): void {
+            if (str_contains($query->sql, 'group by "role"')) {
+                $userMetricQueries++;
+            }
 
-        $this->actingAs($admin)
+            if (str_contains($query->sql, 'group by "status"')) {
+                $workOrderMetricQueries++;
+            }
+        });
+
+        $response = $this->actingAs($admin)
             ->get(route('admin.dashboard'))
             ->assertSee('Total users')
             ->assertSee('Active users')
@@ -66,6 +79,11 @@ class AdminDashboardTest extends TestCase
             ->assertSee('Recent system activity')
             ->assertSee('Admin overview activity test.')
             ->assertSee('Test Admin Activity');
+        $this->assertSame(3, $response->viewData('totalUsers'));
+        $this->assertSame(2, $response->viewData('activeUsers'));
+        $this->assertSame(1, $response->viewData('inactiveUsers'));
+        $this->assertSame(1, $userMetricQueries);
+        $this->assertSame(1, $workOrderMetricQueries);
     }
 
     public function test_guest_is_redirected_to_sign_in_from_admin_dashboard(): void

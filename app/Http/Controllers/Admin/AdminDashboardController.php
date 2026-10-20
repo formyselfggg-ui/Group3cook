@@ -13,20 +13,29 @@ class AdminDashboardController extends Controller
 {
     public function __invoke(): View
     {
-        $usersByRole = User::query()
-            ->selectRaw('role, COUNT(*) as total')
+        $userMetrics = User::query()
+            ->select('role')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw('COUNT(CASE WHEN is_active = ? THEN 1 END) as active_total', [true])
+            ->selectRaw('COUNT(CASE WHEN is_active = ? THEN 1 END) as inactive_total', [false])
             ->groupBy('role')
-            ->pluck('total', 'role');
-
-        $workOrdersByStatus = WorkOrder::query()
-            ->selectRaw('status, COUNT(*) as total')
+            ->get();
+        $usersByRole = $userMetrics->pluck('total', 'role');
+        $workOrderMetrics = WorkOrder::query()
+            ->select('status')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw(
+                'COUNT(CASE WHEN priority = ? AND status != ? THEN 1 END) as urgent_total',
+                [WorkOrder::PRIORITY_URGENT, WorkOrder::STATUS_COMPLETED],
+            )
             ->groupBy('status')
-            ->pluck('total', 'status');
+            ->get();
+        $workOrdersByStatus = $workOrderMetrics->pluck('total', 'status');
 
         return view('admin.dashboard', [
-            'totalUsers' => User::query()->count(),
-            'activeUsers' => User::query()->where('is_active', true)->count(),
-            'inactiveUsers' => User::query()->where('is_active', false)->count(),
+            'totalUsers' => (int) $userMetrics->sum('total'),
+            'activeUsers' => (int) $userMetrics->sum('active_total'),
+            'inactiveUsers' => (int) $userMetrics->sum('inactive_total'),
             'pendingRegistrationRequests' => RegistrationRequest::query()
                 ->where('status', RegistrationRequest::STATUS_PENDING)
                 ->count(),
@@ -39,13 +48,10 @@ class AdminDashboardController extends Controller
                 User::ROLE_SUPERVISOR => 'Supervisors',
                 User::ROLE_FIELD_PERSONNEL => 'Field Personnel',
             ],
-            'totalWorkOrders' => WorkOrder::query()->count(),
-            'urgentWorkOrders' => WorkOrder::query()
-                ->where('priority', WorkOrder::PRIORITY_URGENT)
-                ->where('status', '!=', WorkOrder::STATUS_COMPLETED)
-                ->count(),
+            'totalWorkOrders' => (int) $workOrderMetrics->sum('total'),
+            'urgentWorkOrders' => (int) $workOrderMetrics->sum('urgent_total'),
             'recentActivity' => ActivityLog::query()
-                ->with('user')
+                ->with('user:id,name')
                 ->latest('created_at')
                 ->limit(8)
                 ->get(),

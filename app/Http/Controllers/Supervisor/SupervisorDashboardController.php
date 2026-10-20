@@ -21,7 +21,31 @@ class SupervisorDashboardController extends Controller
 
         $workOrderQuery = WorkOrder::query();
         $workOrders = (clone $workOrderQuery)
-            ->with(['assignedPersonnel', 'asset', 'materialUsages.material'])
+            ->select([
+                'id',
+                'work_order_number',
+                'title',
+                'description',
+                'category',
+                'priority',
+                'assigned_personnel_id',
+                'asset_id',
+                'scheduled_at',
+                'status',
+                'work_performed',
+                'field_notes',
+                'photo_paths',
+                'submitted_at',
+                'return_notes',
+                'supervisor_approved_at',
+                'created_at',
+            ])
+            ->with([
+                'assignedPersonnel:id,name',
+                'asset:id,asset_number,name',
+                'materialUsages:id,work_order_id,material_id,quantity',
+                'materialUsages.material:id,name,unit',
+            ])
             ->when(
                 $filters['status'] ?? null,
                 fn ($query, string $status) => $query->where('status', $status),
@@ -37,9 +61,20 @@ class SupervisorDashboardController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        $workOrderCounts = WorkOrder::query()
+            ->select('status')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw(
+                'COUNT(CASE WHEN priority = ? AND status != ? THEN 1 END) as urgent_total',
+                [WorkOrder::PRIORITY_URGENT, WorkOrder::STATUS_COMPLETED],
+            )
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
         $fieldPersonnel = User::query()
             ->where('role', User::ROLE_FIELD_PERSONNEL)
             ->where('is_active', true)
+            ->select(['id', 'name', 'email'])
             ->withCount([
                 'assignedWorkOrders as active_work_orders_count' => fn ($query) => $query
                     ->where('status', '!=', WorkOrder::STATUS_COMPLETED),
@@ -54,18 +89,15 @@ class SupervisorDashboardController extends Controller
             'statuses' => WorkOrder::STATUSES,
             'priorities' => WorkOrder::PRIORITIES,
             'counts' => [
-                'pending' => (clone $workOrderQuery)->where('status', WorkOrder::STATUS_PENDING)->count(),
-                'assigned' => (clone $workOrderQuery)->where('status', WorkOrder::STATUS_ASSIGNED)->count(),
-                'in_progress' => (clone $workOrderQuery)->where('status', WorkOrder::STATUS_IN_PROGRESS)->count(),
-                'for_review' => (clone $workOrderQuery)->where('status', WorkOrder::STATUS_FOR_REVIEW)->count(),
-                'completed' => (clone $workOrderQuery)->where('status', WorkOrder::STATUS_COMPLETED)->count(),
-                'urgent' => (clone $workOrderQuery)
-                    ->where('priority', WorkOrder::PRIORITY_URGENT)
-                    ->where('status', '!=', WorkOrder::STATUS_COMPLETED)
-                    ->count(),
+                'pending' => (int) ($workOrderCounts->get(WorkOrder::STATUS_PENDING)->total ?? 0),
+                'assigned' => (int) ($workOrderCounts->get(WorkOrder::STATUS_ASSIGNED)->total ?? 0),
+                'in_progress' => (int) ($workOrderCounts->get(WorkOrder::STATUS_IN_PROGRESS)->total ?? 0),
+                'for_review' => (int) ($workOrderCounts->get(WorkOrder::STATUS_FOR_REVIEW)->total ?? 0),
+                'completed' => (int) ($workOrderCounts->get(WorkOrder::STATUS_COMPLETED)->total ?? 0),
+                'urgent' => (int) $workOrderCounts->sum('urgent_total'),
             ],
             'fieldPersonnel' => $fieldPersonnel,
-            'assets' => Asset::query()->orderBy('asset_number')->get(),
+            'assets' => Asset::query()->orderBy('asset_number')->get(['id', 'asset_number', 'name']),
             'unassignedWorkOrders' => WorkOrder::query()
                 ->with('asset:id,asset_number,name')
                 ->where('status', WorkOrder::STATUS_PENDING)

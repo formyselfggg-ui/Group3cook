@@ -22,7 +22,11 @@ class WorkOrderDashboardController extends Controller
             ->whereBelongsTo($user, 'assignedPersonnel');
 
         $workOrders = (clone $assignedWorkOrders)
-            ->with(['asset', 'materialUsages.material'])
+            ->with([
+                'asset:id,asset_number,name',
+                'materialUsages:id,work_order_id,material_id,quantity',
+                'materialUsages.material:id,name,unit',
+            ])
             ->when(
                 $filters['status'] ?? null,
                 fn ($query, string $status) => $query->where('status', $status),
@@ -35,27 +39,34 @@ class WorkOrderDashboardController extends Controller
             ->orderBy('scheduled_at')
             ->paginate(8)
             ->withQueryString();
+        $workOrderCounts = (clone $assignedWorkOrders)
+            ->select('status')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw(
+                'COUNT(CASE WHEN priority = ? AND status != ? THEN 1 END) as urgent_total',
+                [WorkOrder::PRIORITY_URGENT, WorkOrder::STATUS_COMPLETED],
+            )
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
 
         return view('field.dashboard', [
             'workOrders' => $workOrders,
             'filter' => $filters['status'] ?? null,
             'priorityFilter' => $filters['priority'] ?? null,
             'counts' => [
-                'assigned' => (clone $assignedWorkOrders)->where('status', WorkOrder::STATUS_ASSIGNED)->count(),
-                'in_progress' => (clone $assignedWorkOrders)->where('status', WorkOrder::STATUS_IN_PROGRESS)->count(),
-                'for_review' => (clone $assignedWorkOrders)->where('status', WorkOrder::STATUS_FOR_REVIEW)->count(),
-                'completed' => (clone $assignedWorkOrders)->where('status', WorkOrder::STATUS_COMPLETED)->count(),
-                'urgent' => (clone $assignedWorkOrders)
-                    ->where('priority', WorkOrder::PRIORITY_URGENT)
-                    ->whereNotIn('status', [WorkOrder::STATUS_COMPLETED])
-                    ->count(),
+                'assigned' => (int) ($workOrderCounts->get(WorkOrder::STATUS_ASSIGNED)->total ?? 0),
+                'in_progress' => (int) ($workOrderCounts->get(WorkOrder::STATUS_IN_PROGRESS)->total ?? 0),
+                'for_review' => (int) ($workOrderCounts->get(WorkOrder::STATUS_FOR_REVIEW)->total ?? 0),
+                'completed' => (int) ($workOrderCounts->get(WorkOrder::STATUS_COMPLETED)->total ?? 0),
+                'urgent' => (int) $workOrderCounts->sum('urgent_total'),
             ],
             'statuses' => WorkOrder::STATUSES,
             'priorities' => WorkOrder::PRIORITIES,
             'materials' => Material::query()
                 ->where('quantity_on_hand', '>', 0)
                 ->orderBy('name')
-                ->get(),
+                ->get(['id', 'name', 'quantity_on_hand', 'unit']),
         ]);
     }
 }
