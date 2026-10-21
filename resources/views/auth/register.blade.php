@@ -31,7 +31,7 @@
                     <span class="grid size-10 place-items-center rounded-xl bg-[#e2f0e1] text-[#34794e]">
                         <svg class="size-6" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13.4 2.8 5.7 13h5l-.5 8.2L18.4 11h-5.1l.1-8.2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                     </span>
-                    DASURECO <span class="font-normal text-[#819087]">Field operations</span>
+                    DASURECO <span class="font-normal text-[#647068]">Field operations</span>
                 </a>
                 <p class="text-xs font-bold uppercase tracking-[.18em] text-[#66826d]">Administrator approval required</p>
                 <h2 class="mt-3 text-3xl font-semibold tracking-[-.04em] text-[#17251d]">Request an account</h2>
@@ -51,12 +51,12 @@
                     @csrf
                     <div class="grid gap-2">
                         <label class="text-sm font-semibold text-[#344239]" for="name">Full name</label>
-                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-4 text-sm outline-none transition placeholder:text-[#a0aaa1] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" maxlength="255" required autofocus>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-4 text-sm outline-none transition placeholder:text-[#7c887e] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" maxlength="255" required autofocus>
                         @error('name')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
                     <div class="grid gap-2">
                         <label class="text-sm font-semibold text-[#344239]" for="email">Work email</label>
-                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-4 text-sm outline-none transition placeholder:text-[#a0aaa1] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" maxlength="255" placeholder="you@example.com" required>
+                        <input class="h-11 rounded-xl border border-[#dce4dc] bg-white px-4 text-sm outline-none transition placeholder:text-[#7c887e] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" maxlength="255" placeholder="you@example.com" required>
                         @error('email')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
                     <div class="grid gap-2">
@@ -79,7 +79,7 @@
                     </div>
                     <button class="mt-2 inline-flex h-12 items-center justify-center rounded-xl bg-[#176442] px-5 text-sm font-bold text-white shadow-lg shadow-[#176442]/15 transition hover:bg-[#105437] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" type="submit">Send registration request</button>
                 </form>
-                <p class="mt-6 text-center text-xs leading-5 text-[#879188]">Already have an account?
+                <p class="mt-6 text-center text-xs leading-5 text-[#5f6b62]">Already have an account?
                     <a class="font-semibold text-[#28704a] underline decoration-[#b8d1bb] underline-offset-4 hover:text-[#176442]" href="{{ route('login') }}">Sign in</a>
                 </p>
             </div>

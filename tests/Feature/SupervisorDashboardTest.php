@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\ActivityLog;
 use App\Models\Asset;
 use App\Models\User;
 use App\Models\WorkOrder;
+use App\Models\WorkOrderMaterialUsage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -259,5 +261,170 @@ class SupervisorDashboardTest extends TestCase
 
         $this->assertSame(WorkOrder::STATUS_FOR_REVIEW, $workOrder->fresh()->status);
         $this->assertNull($workOrder->fresh()->completion_at);
+    }
+
+    public function test_supervisor_can_delete_a_work_order_that_field_personnel_has_not_started(): void
+    {
+        $supervisor = User::factory()->create(['role' => User::ROLE_SUPERVISOR]);
+        $fieldUser = User::factory()->create(['role' => User::ROLE_FIELD_PERSONNEL]);
+        $workOrder = WorkOrder::factory()
+            ->for($fieldUser, 'assignedPersonnel')
+            ->create(['status' => WorkOrder::STATUS_ASSIGNED]);
+
+        $this->actingAs($supervisor)
+            ->delete(route('supervisor.work-orders.destroy', $workOrder))
+            ->assertRedirect(route('supervisor.dashboard'))
+            ->assertSessionHas('status', 'Work order deleted.');
+
+        $this->assertDatabaseMissing('work_orders', ['id' => $workOrder->id]);
+        $this->assertDatabaseHas('activity_logs', [
+            'user_id' => $supervisor->id,
+            'action' => 'work_order_deleted',
+            'record_type' => WorkOrder::class,
+            'record_id' => $workOrder->id,
+        ]);
+    }
+
+    public function test_supervisor_can_delete_a_pending_work_order_that_is_not_yet_assigned(): void
+    {
+        $supervisor = User::factory()->create(['role' => User::ROLE_SUPERVISOR]);
+        $workOrder = WorkOrder::factory()->create([
+            'status' => WorkOrder::STATUS_PENDING,
+            'assigned_personnel_id' => null,
+            'date_assigned' => null,
+        ]);
+
+        $this->actingAs($supervisor)
+            ->delete(route('supervisor.work-orders.destroy', $workOrder))
+            ->assertRedirect(route('supervisor.dashboard'))
+            ->assertSessionHas('status', 'Work order deleted.');
+
+        $this->assertDatabaseMissing('work_orders', ['id' => $workOrder->id]);
+    }
+
+    public function test_supervisor_cannot_delete_a_work_order_that_field_personnel_has_started(): void
+    {
+        $supervisor = User::factory()->create(['role' => User::ROLE_SUPERVISOR]);
+
+        foreach ([WorkOrder::STATUS_IN_PROGRESS, WorkOrder::STATUS_FOR_REVIEW, WorkOrder::STATUS_COMPLETED] as $status) {
+            $workOrder = WorkOrder::factory()->create([
+                'status' => $status,
+                'submitted_at' => now(),
+                'work_performed' => 'Replaced the damaged connector.',
+            ]);
+
+            $this->actingAs($supervisor)
+                ->from(route('supervisor.dashboard'))
+                ->delete(route('supervisor.work-orders.destroy', $workOrder))
+                ->assertRedirect(route('supervisor.dashboard'))
+                ->assertSessionHasErrors('work_order');
+
+            $this->assertDatabaseHas('work_orders', ['id' => $workOrder->id]);
+        }
+    }
+
+    public function test_work_order_with_recorded_field_activity_cannot_be_deleted_even_while_assigned(): void
+    {
+        $supervisor = User::factory()->create(['role' => User::ROLE_SUPERVISOR]);
+        $fieldUser = User::factory()->create(['role' => User::ROLE_FIELD_PERSONNEL]);
+        $workOrder = WorkOrder::factory()
+            ->for($fieldUser, 'assignedPersonnel')
+            ->create(['status' => WorkOrder::STATUS_ASSIGNED]);
+        WorkOrderMaterialUsage::factory()->create([
+            'work_order_id' => $workOrder->id,
+            'user_id' => $fieldUser->id,
+        ]);
+
+        $this->actingAs($supervisor)
+            ->from(route('supervisor.dashboard'))
+            ->delete(route('supervisor.work-orders.destroy', $workOrder))
+            ->assertRedirect(route('supervisor.dashboard'))
+            ->assertSessionHasErrors('work_order');
+
+        $this->assertDatabaseHas('work_orders', ['id' => $workOrder->id]);
+    }
+
+    public function test_deleting_a_work_order_removes_its_activity_logs(): void
+    {
+        $supervisor = User::factory()->create(['role' => User::ROLE_SUPERVISOR]);
+        $workOrder = WorkOrder::factory()->create(['status' => WorkOrder::STATUS_ASSIGNED]);
+        ActivityLog::create([
+            'user_id' => $supervisor->id,
+            'action' => 'work_order_created',
+            'record_type' => WorkOrder::class,
+            'record_id' => $workOrder->id,
+            'details' => 'Created work order '.$workOrder->work_order_number.'.',
+        ]);
+
+        $this->actingAs($supervisor)
+            ->delete(route('supervisor.work-orders.destroy', $workOrder))
+            ->assertRedirect(route('supervisor.dashboard'));
+
+        $this->assertDatabaseMissing('activity_logs', [
+            'action' => 'work_order_created',
+            'record_id' => $workOrder->id,
+        ]);
+        $this->assertDatabaseHas('activity_logs', [
+            'action' => 'work_order_deleted',
+            'record_id' => $workOrder->id,
+        ]);
+    }
+
+    public function test_only_supervisors_can_delete_work_orders(): void
+    {
+        $workOrder = WorkOrder::factory()->create(['status' => WorkOrder::STATUS_ASSIGNED]);
+
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_FIELD_PERSONNEL]))
+            ->delete(route('supervisor.work-orders.destroy', $workOrder))
+            ->assertForbidden();
+
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]))
+            ->delete(route('supervisor.work-orders.destroy', $workOrder))
+            ->assertForbidden();
+
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_OPERATIONS]))
+            ->delete(route('supervisor.work-orders.destroy', $workOrder))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('work_orders', ['id' => $workOrder->id]);
+    }
+
+    public function test_only_supervisors_can_approve_or_close_work_orders(): void
+    {
+        $workOrder = WorkOrder::factory()->create(['status' => WorkOrder::STATUS_FOR_REVIEW]);
+
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]))
+            ->post(route('supervisor.work-orders.review', $workOrder), ['decision' => 'approve'])
+            ->assertForbidden();
+
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_ADMIN]))
+            ->post(route('supervisor.work-orders.close', $workOrder))
+            ->assertForbidden();
+
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_OPERATIONS]))
+            ->post(route('supervisor.work-orders.review', $workOrder), ['decision' => 'approve'])
+            ->assertForbidden();
+
+        $this->actingAs(User::factory()->create(['role' => User::ROLE_FIELD_PERSONNEL]))
+            ->post(route('supervisor.work-orders.close', $workOrder))
+            ->assertForbidden();
+
+        $workOrder->refresh();
+
+        $this->assertSame(WorkOrder::STATUS_FOR_REVIEW, $workOrder->status);
+        $this->assertNull($workOrder->supervisor_approved_at);
+        $this->assertNull($workOrder->completion_at);
+    }
+
+    public function test_supervisor_dashboard_only_offers_deletion_before_field_work_starts(): void
+    {
+        $supervisor = User::factory()->create(['role' => User::ROLE_SUPERVISOR]);
+        $assigned = WorkOrder::factory()->create(['status' => WorkOrder::STATUS_ASSIGNED]);
+        $inProgress = WorkOrder::factory()->create(['status' => WorkOrder::STATUS_IN_PROGRESS]);
+
+        $response = $this->actingAs($supervisor)->get(route('supervisor.dashboard'));
+
+        $response->assertSee(route('supervisor.work-orders.destroy', $assigned), false);
+        $response->assertDontSee(route('supervisor.work-orders.destroy', $inProgress), false);
     }
 }

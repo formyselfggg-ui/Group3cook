@@ -2,6 +2,8 @@
 
 use App\Http\Middleware\RequireAdministrator;
 use App\Http\Middleware\RequireFieldPersonnel;
+use App\Http\Middleware\RequireOperationsStaff;
+use App\Http\Middleware\RequirePermission;
 use App\Http\Middleware\RequireSupervisor;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,7 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => RequireAdministrator::class,
             'field' => RequireFieldPersonnel::class,
+            'operations' => RequireOperationsStaff::class,
             'supervisor' => RequireSupervisor::class,
+            'permission' => RequirePermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

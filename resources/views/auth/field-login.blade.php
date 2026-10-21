@@ -36,7 +36,7 @@
                     <span class="grid size-10 place-items-center rounded-xl bg-[#e2f0e1] text-[#34794e]">
                         <svg class="size-6" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13.4 2.8 5.7 13h5l-.5 8.2L18.4 11h-5.1l.1-8.2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                     </span>
-                    DASURECO <span class="font-normal text-[#819087]">Field operations</span>
+                    DASURECO <span class="font-normal text-[#647068]">Field operations</span>
                 </a>
                 <p class="text-xs font-bold uppercase tracking-[.18em] text-[#66826d]">Secure team access</p>
                 <h2 class="mt-3 text-3xl font-semibold tracking-[-.04em] text-[#17251d]">Sign in to your account</h2>
@@ -57,12 +57,12 @@
                     @csrf
                     <div class="grid gap-2">
                         <label class="text-sm font-semibold text-[#344239]" for="email">Work email</label>
-                        <input class="h-12 rounded-xl border border-[#dce4dc] bg-white px-4 text-sm outline-none transition placeholder:text-[#a0aaa1] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="username" placeholder="you@example.com" required autofocus>
+                        <input class="h-12 rounded-xl border border-[#dce4dc] bg-white px-4 text-sm outline-none transition placeholder:text-[#7c887e] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="username" placeholder="you@example.com" required autofocus>
                         @error('email')<span class="text-xs text-[#a13e31]">{{ $message }}</span>@enderror
                     </div>
                     <div class="grid gap-2">
                         <label class="text-sm font-semibold text-[#344239]" for="password">Password</label>
-                        <input class="h-12 rounded-xl border border-[#dce4dc] bg-white px-4 text-sm outline-none transition placeholder:text-[#a0aaa1] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+                        <input class="h-12 rounded-xl border border-[#dce4dc] bg-white px-4 text-sm outline-none transition placeholder:text-[#7c887e] focus:border-[#51906a] focus:ring-4 focus:ring-[#3e8452]/10" id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
                     </div>
                     <label class="flex items-center gap-2 text-sm text-[#69766c]">
                         <input class="size-4 rounded border-[#cbd7cb] accent-[#28704a] focus:ring-[#3e8452]/20" type="checkbox" name="remember" value="1">
@@ -73,7 +73,7 @@
                         <svg class="size-4" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </button>
                 </form>
-                <p class="mt-7 text-center text-xs leading-5 text-[#879188]">Need an account?
+                <p class="mt-7 text-center text-xs leading-5 text-[#5f6b62]">Need an account?
                     <a class="font-semibold text-[#28704a] underline decoration-[#b8d1bb] underline-offset-4 hover:text-[#176442]" href="{{ route('register') }}">Request access</a>.
                     New accounts require administrator approval.
                 </p>
