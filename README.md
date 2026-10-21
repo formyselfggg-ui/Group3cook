@@ -26,6 +26,22 @@ Available roles are Administrator, Operations / Engineering Staff, Supervisor / 
 
 Signed-in users can update their name and email or change their password through **Profile settings**. Account role and activation status remain administrator-managed.
 
+## User administration and permissions
+
+Administrators manage accounts at `/admin/users`: create an account, assign its role, edit its details, and deactivate or reactivate it. Each change is written to the activity log. Role defaults and per-account grants are managed at `/admin/roles`.
+
+Permissions are enforced on the backend through the `permission` middleware, not only by hiding interface elements. Every role starts from the defaults in `App\Models\Permission::defaultsForRole()`; once an administrator saves a role configuration, the stored grants become authoritative and can be restored to the defaults at any time. Individual accounts can hold extra permissions on top of their role.
+
+Run `php artisan db:seed` to load the permission catalogue and the default role grants into the database.
+
+## Inventory and material usage
+
+Operations staff register materials and maintain the quantity on hand, unit, and reorder level for each SKU at `/operations/dashboard`. Field personnel record the materials they consume against an in-progress work order, which deducts the stock and writes a usage history row. When a material falls to or below its reorder level, Operations and Administrators receive a low-inventory notification.
+
+## Notifications
+
+In-app notifications are delivered through the database channel and are listed at `/notifications`, with an unread counter in the header. Notifications are raised for work-order assignment, priority changes, submissions for review, returns for correction, approvals, completions, and low inventory levels. Each notification respects the recipient's role.
+
 ## Tests
 
 Run all tests with `php artisan test`. Authentication and account-approval tests can be run with `php artisan test --filter=AuthenticationTest`.

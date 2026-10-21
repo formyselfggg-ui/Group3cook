@@ -30,6 +30,11 @@ class Material extends Model
         return $this->hasMany(WorkOrderMaterialUsage::class);
     }
 
+    public function isLowStock(): bool
+    {
+        return (float) $this->quantity_on_hand <= (float) $this->reorder_level;
+    }
+
     /** @use HasFactory<MaterialFactory> */
     use HasFactory;
 }

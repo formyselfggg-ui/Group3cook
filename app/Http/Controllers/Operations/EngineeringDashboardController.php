@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Operations;
 
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
+use App\Models\Material;
 use App\Models\User;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderMaterialUsage;
@@ -40,6 +41,9 @@ class EngineeringDashboardController extends Controller
             'assetOptions' => Asset::query()
                 ->orderBy('asset_number')
                 ->get(['id', 'asset_number', 'name']),
+            'materials' => Material::query()
+                ->orderBy('name')
+                ->get(),
             'fieldPersonnel' => User::query()
                 ->where('role', User::ROLE_FIELD_PERSONNEL)
                 ->where('is_active', true)

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\User;
 use App\Models\WorkOrder;
+use App\Services\WorkOrderMetrics;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -43,9 +44,13 @@ class SupervisorDashboardController extends Controller
             ->withCount([
                 'assignedWorkOrders as active_work_orders_count' => fn ($query) => $query
                     ->where('status', '!=', WorkOrder::STATUS_COMPLETED),
+                'assignedWorkOrders as completed_work_orders_count' => fn ($query) => $query
+                    ->where('status', WorkOrder::STATUS_COMPLETED),
             ])
             ->orderBy('name')
             ->get();
+
+        $metrics = WorkOrderMetrics::for(WorkOrder::query());
 
         return view('supervisor.dashboard', [
             'workOrders' => $workOrders,
@@ -65,6 +70,7 @@ class SupervisorDashboardController extends Controller
                     ->count(),
             ],
             'fieldPersonnel' => $fieldPersonnel,
+            'metrics' => $metrics,
             'assets' => Asset::query()->orderBy('asset_number')->get(),
             'unassignedWorkOrders' => WorkOrder::query()
                 ->with('asset:id,asset_number,name')

@@ -43,6 +43,11 @@ class WorkOrder extends Model
         self::PRIORITY_URGENT => 'Urgent',
     ];
 
+    public const DELETABLE_STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_ASSIGNED,
+    ];
+
     protected $fillable = [
         'work_order_number',
         'title',
@@ -95,6 +100,24 @@ class WorkOrder extends Model
     public function materialUsages(): HasMany
     {
         return $this->hasMany(WorkOrderMaterialUsage::class);
+    }
+
+    public function hasFieldActivity(): bool
+    {
+        $hasMaterials = $this->relationLoaded('materialUsages')
+            ? $this->materialUsages->isNotEmpty()
+            : $this->materialUsages()->exists();
+
+        return $hasMaterials
+            || $this->submitted_at !== null
+            || $this->work_performed !== null
+            || $this->field_notes !== null
+            || ! empty($this->photo_paths);
+    }
+
+    public function canBeDeleted(): bool
+    {
+        return in_array($this->status, self::DELETABLE_STATUSES, true) && ! $this->hasFieldActivity();
     }
 
     /** @use HasFactory<WorkOrderFactory> */

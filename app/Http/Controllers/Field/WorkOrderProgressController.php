@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use App\Models\Material;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderMaterialUsage;
+use App\Services\WorkOrderNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class WorkOrderProgressController extends Controller
 {
+    public function __construct(private readonly WorkOrderNotifier $notifier) {}
+
     public function start(Request $request, int $workOrder): RedirectResponse
     {
         $assignedWorkOrder = $this->assignedWorkOrder($request, $workOrder);
@@ -121,6 +124,10 @@ class WorkOrderProgressController extends Controller
             ]);
         }
 
+        $this->notifier->submittedForReview(
+            WorkOrder::query()->with('assignedPersonnel')->findOrFail($assignedWorkOrder->id),
+        );
+
         return redirect()->route('field.dashboard')->with(
             'status',
             'Work submitted for supervisor review.',
@@ -142,7 +149,7 @@ class WorkOrderProgressController extends Controller
             'quantity' => ['required', 'numeric', 'min:0.01', 'max:100000'],
         ]);
 
-        $recorded = DB::transaction(function () use ($request, $assignedWorkOrder, $validated): bool {
+        $recordedMaterial = DB::transaction(function () use ($request, $assignedWorkOrder, $validated): ?Material {
             $currentWorkOrder = WorkOrder::query()
                 ->whereBelongsTo($request->user(), 'assignedPersonnel')
                 ->whereKey($assignedWorkOrder->id)
@@ -150,7 +157,7 @@ class WorkOrderProgressController extends Controller
                 ->firstOrFail();
 
             if ($currentWorkOrder->status !== WorkOrder::STATUS_IN_PROGRESS) {
-                return false;
+                return null;
             }
 
             $material = Material::query()
@@ -191,13 +198,17 @@ class WorkOrderProgressController extends Controller
                 'details' => "Recorded {$validated['quantity']} {$material->unit} of {$material->name} for work order {$currentWorkOrder->work_order_number}.",
             ]);
 
-            return true;
+            return $material->refresh();
         });
 
-        if (! $recorded) {
+        if ($recordedMaterial === null) {
             return back()->withErrors([
                 'work_order' => 'Materials can only be recorded on in-progress work orders.',
             ]);
+        }
+
+        if ($recordedMaterial->isLowStock()) {
+            $this->notifier->lowInventory($recordedMaterial);
         }
 
         return redirect()->route('field.dashboard')->with('status', 'Material usage recorded and inventory updated.');

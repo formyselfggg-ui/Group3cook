@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Field;
 
 use App\Http\Controllers\Controller;
 use App\Models\Material;
+use App\Models\Permission;
 use App\Models\WorkOrder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -18,8 +19,10 @@ class WorkOrderDashboardController extends Controller
             'priority' => ['nullable', Rule::in(array_keys(WorkOrder::PRIORITIES))],
         ]);
         $user = $request->user();
+        $canViewAll = $user->hasPermissionTo(Permission::VIEW_ALL_WORK_ORDERS);
+
         $assignedWorkOrders = WorkOrder::query()
-            ->whereBelongsTo($user, 'assignedPersonnel');
+            ->when(! $canViewAll, fn ($query) => $query->whereBelongsTo($user, 'assignedPersonnel'));
 
         $workOrders = (clone $assignedWorkOrders)
             ->with(['asset', 'materialUsages.material'])
@@ -38,6 +41,7 @@ class WorkOrderDashboardController extends Controller
 
         return view('field.dashboard', [
             'workOrders' => $workOrders,
+            'canViewAll' => $canViewAll,
             'filter' => $filters['status'] ?? null,
             'priorityFilter' => $filters['priority'] ?? null,
             'counts' => [
