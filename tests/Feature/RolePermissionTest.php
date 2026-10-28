@@ -6,6 +6,7 @@ use App\Models\Material;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\WorkOrder;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -50,6 +51,40 @@ class RolePermissionTest extends TestCase
         $this->assertTrue($admin->hasPermissionTo(Permission::MANAGE_USERS));
         $this->assertTrue($admin->hasPermissionTo(Permission::MANAGE_PERMISSIONS));
         $this->assertTrue($admin->hasPermissionTo(Permission::RECORD_MATERIALS));
+    }
+
+    public function test_permission_checks_reuse_effective_permissions_for_the_same_user(): void
+    {
+        $supervisor = User::factory()->create(['role' => User::ROLE_SUPERVISOR]);
+        $permissionQueryCount = 0;
+
+        DB::listen(function (QueryExecuted $query) use (&$permissionQueryCount): void {
+            if (str_contains($query->sql, 'role_permission_configs') || str_contains($query->sql, 'permission_user')) {
+                $permissionQueryCount++;
+            }
+        });
+
+        $this->assertTrue($supervisor->hasPermissionTo(Permission::ASSIGN_WORK_ORDERS));
+        $this->assertTrue($supervisor->hasPermissionTo(Permission::REVIEW_WORK_ORDERS));
+        $this->assertFalse($supervisor->hasPermissionTo(Permission::MANAGE_USERS));
+
+        $this->assertSame(2, $permissionQueryCount);
+    }
+
+    public function test_explicit_permission_changes_invalidate_the_cached_permissions(): void
+    {
+        $fieldUser = User::factory()->create(['role' => User::ROLE_FIELD_PERSONNEL]);
+        $permission = Permission::query()->where('name', Permission::VIEW_ALL_WORK_ORDERS)->firstOrFail();
+
+        $this->assertFalse($fieldUser->hasPermissionTo(Permission::VIEW_ALL_WORK_ORDERS));
+
+        $fieldUser->grantPermission($permission);
+
+        $this->assertTrue($fieldUser->hasPermissionTo(Permission::VIEW_ALL_WORK_ORDERS));
+
+        $fieldUser->revokePermission($permission);
+
+        $this->assertFalse($fieldUser->hasPermissionTo(Permission::VIEW_ALL_WORK_ORDERS));
     }
 
     public function test_admin_can_save_a_role_permission_configuration(): void

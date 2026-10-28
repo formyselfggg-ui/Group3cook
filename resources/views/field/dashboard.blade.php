@@ -27,7 +27,7 @@
             ];
         @endphp
         @foreach ($summaryCards as $card)
-            <a class="group rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_4px_18px_rgba(30,54,35,.025)] transition hover:-translate-y-0.5 hover:border-[#cddfce] hover:shadow-[0_10px_24px_rgba(30,54,35,.07)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b] sm:p-5"
+            <a class="group rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] transition hover:-translate-y-0.5 hover:border-[#a9c5ad] hover:shadow-[0_12px_28px_rgba(30,54,35,.11)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b] sm:p-5"
                href="{{ isset($card['status']) ? route('field.dashboard', ['status' => $card['status']]) : route('field.dashboard', $card['filter']) }}">
                 <span class="flex items-center justify-between gap-2">
                     <span class="text-xs font-semibold leading-5 text-[#5f6b62]">{{ $card['label'] }}</span>
@@ -38,7 +38,7 @@
         @endforeach
     </section>
 
-    <section id="work-orders" class="overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]">
+    <section id="work-orders" class="overflow-hidden rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] shadow-[0_10px_28px_rgba(29,55,37,.075)]">
         <div class="border-b border-[#edf0ec] px-4 py-5 sm:px-6">
             <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <div>

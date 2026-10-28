@@ -6,7 +6,7 @@
 @section('footer', 'DASURECO field operations · Stay safe and keep every work order updated.')
 
 @section('avatar')
-    <span class="grid size-9 place-items-center rounded-full bg-[#dff0df] text-sm font-bold text-[#2e7048]" aria-hidden="true">
+    <span class="grid size-9 place-items-center rounded-full bg-white/10 text-sm font-bold text-[#d0edc8] ring-1 ring-white/15" aria-hidden="true">
         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
     </span>
 @endsection

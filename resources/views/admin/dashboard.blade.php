@@ -4,8 +4,99 @@
 
 @section('content')
 
-<div class="grid gap-6 lg:gap-7">
-    <section class="relative isolate overflow-hidden rounded-3xl bg-[#12382b] px-5 py-6 text-white shadow-[0_18px_50px_rgba(16,48,35,.12)] sm:px-8 sm:py-8">
+<div class="dashboard-section-layout grid gap-6 lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
+    <nav class="dashboard-section-nav grid grid-cols-2 gap-2 rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-3 shadow-[0_10px_28px_rgba(29,55,37,.075)] sm:grid-cols-3 lg:sticky lg:top-24 lg:grid-cols-1" aria-label="Admin dashboard sections">
+        <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="#admin-overview">
+            <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 16.5h14M4.5 13l3.2-3.5 2.5 2 5.3-6"/>
+                <path d="M12.5 5.5h3v3"/>
+            </svg>
+            Overview
+        </a>
+        <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="#delivery-performance">
+            <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 16.5h14M4.5 13l3.2-3.5 2.5 2 5.3-6"/>
+                <path d="M12.5 5.5h3v3"/>
+            </svg>
+            Performance
+        </a>
+        <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="#weekly-throughput-and-work-aging">
+            <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 16.5h14M5 14V9m5 5V5m5 9v-7"/>
+            </svg>
+            Weekly throughput &amp; work aging
+        </a>
+        <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="#crew-performance">
+            <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M13.5 16.5v-1.2a2.3 2.3 0 0 0-2.3-2.3H5.8a2.3 2.3 0 0 0-2.3 2.3v1.2"/>
+                <circle cx="8.5" cy="6.2" r="2.7"/>
+                <path d="M14 3.8a2.7 2.7 0 0 1 0 5.2m2.5 7.5v-1.2a2.3 2.3 0 0 0-1.8-2.2"/>
+            </svg>
+            Field crew
+        </a>
+        <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="#material-risk">
+            <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m10 2.5 6.5 3.7v7.6L10 17.5l-6.5-3.7V6.2L10 2.5Z"/>
+                <path d="m3.8 6.4 6.2 3.5 6.2-3.5M10 9.9v7.3"/>
+            </svg>
+            Material risk
+        </a>
+        <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="#work-order-pipeline">
+            <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3.5" y="4" width="13" height="12" rx="1.5"/>
+                <path d="M6.5 7.5h7m-7 3h7m-7 3h4"/>
+            </svg>
+            Work order pipeline
+        </a>
+        <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="#team-composition">
+            <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="7" cy="7" r="2.5"/>
+                <circle cx="14" cy="8" r="2"/>
+                <path d="M2.8 16v-1.1A2.9 2.9 0 0 1 5.7 12h2.6a2.9 2.9 0 0 1 2.9 2.9V16m1.1-3.8h1.1a2.5 2.5 0 0 1 2.5 2.5v1.3"/>
+            </svg>
+            Team composition
+        </a>
+        <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="#recent-activity">
+            <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="10" cy="10" r="7"/>
+                <path d="M10 6v4l2.5 1.5"/>
+            </svg>
+            Recent activity
+        </a>
+        @if (auth()->user()->hasPermissionTo(\App\Models\Permission::MANAGE_USERS))
+            <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="{{ route('admin.users.index') }}">
+                <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="7" cy="7" r="2.5"/>
+                    <circle cx="14" cy="8" r="2"/>
+                    <path d="M2.8 16v-1.1A2.9 2.9 0 0 1 5.7 12h2.6a2.9 2.9 0 0 1 2.9 2.9V16m1.1-3.8h1.1a2.5 2.5 0 0 1 2.5 2.5v1.3"/>
+                </svg>
+                User accounts
+            </a>
+        @endif
+        @if (auth()->user()->hasPermissionTo(\App\Models\Permission::MANAGE_PERMISSIONS))
+            <a class="dashboard-section-link inline-flex min-h-10 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="{{ route('admin.roles.index') }}">
+                <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10 2.8 16 5v4.4c0 3.6-2.4 6.2-6 7.8-3.6-1.6-6-4.2-6-7.8V5l6-2.2Z"/>
+                    <path d="m7.5 9.8 1.7 1.7 3.5-3.7"/>
+                </svg>
+                Roles &amp; permissions
+            </a>
+        @endif
+        <a class="dashboard-section-link inline-flex min-h-10 items-center justify-between gap-2 rounded-xl px-3 py-2 text-xs font-semibold text-[#506356] transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]" href="{{ route('admin.registration-requests') }}">
+            <span class="inline-flex items-center gap-2">
+                <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 3.5h8l4 4v9H4v-13Z"/>
+                    <path d="M12 3.5v4h4m-9 3h6m-6 3h6"/>
+                </svg>
+                Review requests
+            </span>
+            @if ($pendingRegistrationRequests > 0)
+                <span class="grid min-w-5 place-items-center rounded-full bg-[#eaf4e9] px-1.5 py-0.5 text-[10px] font-bold text-[#285c3b]">{{ $pendingRegistrationRequests }}</span>
+            @endif
+        </a>
+    </nav>
+    <div class="grid min-w-0 gap-6 lg:gap-7">
+    <section id="admin-overview" class="scroll-mt-24 relative isolate overflow-hidden rounded-3xl bg-[#12382b] px-5 py-6 text-white shadow-[0_18px_50px_rgba(16,48,35,.12)] sm:px-8 sm:py-8">
         <div class="absolute -right-16 -top-28 -z-10 size-80 rounded-full border border-white/10 shadow-[0_0_0_36px_rgba(255,255,255,.025),0_0_0_72px_rgba(255,255,255,.02)]"></div>
         <div class="relative flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div class="max-w-2xl">
@@ -15,54 +106,34 @@
             </div>
             <div class="flex flex-wrap items-center gap-3">
                 <p class="text-xs font-medium text-[#c1d3c8]">{{ now()->format('l, F j, Y') }}</p>
-                @if (auth()->user()->hasPermissionTo(\App\Models\Permission::MANAGE_USERS))
-                    <a class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/20 px-4 text-xs font-bold text-[#e7f3e4] transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" href="{{ route('admin.users.index') }}">
-                        User accounts
-                        <span aria-hidden="true">→</span>
-                    </a>
-                @endif
-                @if (auth()->user()->hasPermissionTo(\App\Models\Permission::MANAGE_PERMISSIONS))
-                    <a class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/20 px-4 text-xs font-bold text-[#e7f3e4] transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" href="{{ route('admin.roles.index') }}">
-                        Roles &amp; permissions
-                        <span aria-hidden="true">→</span>
-                    </a>
-                @endif
-                <a class="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#b5dda9] px-4 text-xs font-bold text-[#173d2e] transition hover:bg-[#c8e9bd] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" href="{{ route('admin.registration-requests') }}">
-                    Review requests
-                    @if ($pendingRegistrationRequests > 0)
-                        <span class="grid min-w-5 place-items-center rounded-full bg-[#173d2e] px-1.5 py-0.5 text-[10px] text-white">{{ $pendingRegistrationRequests }}</span>
-                    @else
-                        <span aria-hidden="true">→</span>
-                    @endif
-                </a>
             </div>
         </div>
     </section>
 
-    <section class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="System summary">
-        <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
+    <section id="system-summary" class="scroll-mt-24 grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="System summary">
+        <article class="rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5">
             <h2 class="text-xs font-semibold text-[#5f6b62]">Total users</h2>
             <p class="mt-4 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($totalUsers) }}</p>
             <p class="mt-1 text-[11px] text-[#5f6b62]">Across all system roles</p>
         </article>
-        <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
+        <article class="rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5">
             <h2 class="text-xs font-semibold text-[#5f6b62]">Active users</h2>
             <p class="mt-4 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($activeUsers) }}</p>
             <p class="mt-1 text-[11px] text-[#5f6b62]">{{ number_format($inactiveUsers) }} inactive</p>
         </article>
-        <a class="group rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] transition hover:border-[#c5dec5] hover:shadow-[0_10px_28px_rgba(30,54,35,.07)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b] sm:p-5" href="{{ route('admin.registration-requests') }}">
+        <a class="group rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] transition hover:border-[#a9c5ad] hover:shadow-[0_12px_28px_rgba(30,54,35,.11)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b] sm:p-5" href="{{ route('admin.registration-requests') }}">
             <h2 class="text-xs font-semibold text-[#5f6b62]">Pending requests</h2>
             <p class="mt-4 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($pendingRegistrationRequests) }}</p>
             <p class="mt-1 text-[11px] text-[#5f6b62] group-hover:text-[#356947]">Review access requests <span aria-hidden="true">→</span></p>
         </a>
-        <article class="rounded-2xl border p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5 {{ $urgentWorkOrders > 0 ? 'border-[#efd5cf] bg-[#fff7f4]' : 'border-[#e3eae1] bg-white' }}">
+        <article class="rounded-2xl border p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5 {{ $urgentWorkOrders > 0 ? 'border-[#efd5cf] bg-[#fff7f4]' : 'border-[#c7d6c9] bg-[#fbfdfb]' }}">
             <h2 class="text-xs font-semibold text-[#5f6b62]">Urgent work orders</h2>
             <p class="mt-4 text-3xl font-semibold tracking-tight {{ $urgentWorkOrders > 0 ? 'text-[#a0442f]' : 'text-[#23352a]' }}">{{ number_format($urgentWorkOrders) }}</p>
             <p class="mt-1 text-[11px] text-[#5f6b62]">Still open and needing attention</p>
         </article>
     </section>
 
-    <section aria-labelledby="delivery-kpi-heading">
+    <section id="delivery-performance" class="scroll-mt-24" aria-labelledby="delivery-kpi-heading">
         <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
             <div>
                 <h2 id="delivery-kpi-heading" class="text-sm font-semibold text-[#26382c]">Delivery performance</h2>
@@ -71,7 +142,7 @@
             <p class="text-xs font-semibold text-[#55635a]">{{ number_format($metrics->total()) }} work orders tracked</p>
         </div>
         <div class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
-            <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
+            <article class="rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5">
                 <h3 class="text-xs font-semibold text-[#5f6b62]">Completion rate</h3>
                 <p class="mt-3 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($metrics->completionRate(), 1) }}<span class="text-lg font-semibold text-[#647068]">%</span></p>
                 <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-[#edf2ec]" role="img" aria-label="Completion rate {{ $metrics->completionRate() }} percent">
@@ -79,17 +150,17 @@
                 </div>
                 <p class="mt-2 text-[11px] text-[#5f6b62]">{{ number_format($metrics->completed()) }} of {{ number_format($metrics->total()) }} closed</p>
             </article>
-            <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
+            <article class="rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5">
                 <h3 class="text-xs font-semibold text-[#5f6b62]">Open pipeline</h3>
                 <p class="mt-3 text-3xl font-semibold tracking-tight text-[#23352a]">{{ number_format($metrics->open()) }}</p>
                 <p class="mt-2 text-[11px] text-[#5f6b62]">Work orders still in flight</p>
             </article>
-            <article class="rounded-2xl border p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5 {{ $metrics->overdue() > 0 ? 'border-[#efd5cf] bg-[#fff7f4]' : 'border-[#e3eae1] bg-white' }}">
+            <article class="rounded-2xl border p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5 {{ $metrics->overdue() > 0 ? 'border-[#efd5cf] bg-[#fff7f4]' : 'border-[#c7d6c9] bg-[#fbfdfb]' }}">
                 <h3 class="text-xs font-semibold text-[#5f6b62]">Overdue</h3>
                 <p class="mt-3 text-3xl font-semibold tracking-tight {{ $metrics->overdue() > 0 ? 'text-[#a0442f]' : 'text-[#23352a]' }}">{{ number_format($metrics->overdue()) }}</p>
                 <p class="mt-2 text-[11px] text-[#5f6b62]">Past the scheduled date</p>
             </article>
-            <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
+            <article class="rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5">
                 <h3 class="text-xs font-semibold text-[#5f6b62]">On-time delivery</h3>
                 <p class="mt-3 text-3xl font-semibold tracking-tight text-[#23352a]">
                     {{ $metrics->onTimeRate() === null ? '—' : number_format($metrics->onTimeRate(), 1) }}
@@ -97,7 +168,7 @@
                 </p>
                 <p class="mt-2 text-[11px] text-[#5f6b62]">Completed by the schedule</p>
             </article>
-            <article class="rounded-2xl border border-[#e3eae1] bg-white p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5">
+            <article class="rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5">
                 <h3 class="text-xs font-semibold text-[#5f6b62]">Average cycle time</h3>
                 <p class="mt-3 text-3xl font-semibold tracking-tight text-[#23352a]">
                     {{ $metrics->averageCycleDays() === null ? '—' : number_format($metrics->averageCycleDays(), 1) }}
@@ -105,7 +176,7 @@
                 </p>
                 <p class="mt-2 text-[11px] text-[#5f6b62]">Raised to completed</p>
             </article>
-            <article class="rounded-2xl border p-4 shadow-[0_5px_20px_rgba(30,54,35,.025)] sm:p-5 {{ $lowStockCount > 0 ? 'border-[#f0e0c4] bg-[#fffdf7]' : 'border-[#e3eae1] bg-white' }}">
+            <article class="rounded-2xl border p-4 shadow-[0_8px_24px_rgba(30,54,35,.07)] sm:p-5 {{ $lowStockCount > 0 ? 'border-[#f0e0c4] bg-[#fffdf7]' : 'border-[#c7d6c9] bg-[#fbfdfb]' }}">
                 <h3 class="text-xs font-semibold text-[#5f6b62]">Low-stock materials</h3>
                 <p class="mt-3 text-3xl font-semibold tracking-tight {{ $lowStockCount > 0 ? 'text-[#8a6a1f]' : 'text-[#23352a]' }}">{{ number_format($lowStockCount) }}</p>
                 <p class="mt-2 text-[11px] text-[#5f6b62]">At or below reorder level</p>
@@ -113,8 +184,8 @@
         </div>
     </section>
 
-    <div class="grid gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-        <section class="rounded-2xl border border-[#e2e9e1] bg-white p-5 shadow-[0_8px_28px_rgba(29,55,37,.035)] sm:p-6" aria-labelledby="throughput-heading">
+    <div id="weekly-throughput-and-work-aging" class="scroll-mt-24 grid gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+    <section class="rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-5 shadow-[0_10px_28px_rgba(29,55,37,.075)] sm:p-6" aria-labelledby="throughput-heading">
             <div class="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
                 <div>
                     <h2 id="throughput-heading" class="text-sm font-semibold text-[#26382c]">Weekly throughput</h2>
@@ -142,7 +213,7 @@
             </div>
         </section>
 
-        <section class="rounded-2xl border border-[#e2e9e1] bg-white p-5 shadow-[0_8px_28px_rgba(29,55,37,.035)] sm:p-6" aria-labelledby="aging-heading">
+        <section class="rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-5 shadow-[0_10px_28px_rgba(29,55,37,.075)] sm:p-6" aria-labelledby="aging-heading">
             <h2 id="aging-heading" class="text-sm font-semibold text-[#26382c]">Open work aging</h2>
             <p class="mt-1 text-xs text-[#5f6b62]">How long open work orders have been running.</p>
             @php
@@ -177,7 +248,7 @@
     </div>
 
     <div class="grid gap-5 lg:grid-cols-2">
-        <section class="overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]" aria-labelledby="crew-performance-heading">
+        <section id="crew-performance" class="scroll-mt-24 overflow-hidden rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] shadow-[0_10px_28px_rgba(29,55,37,.075)]" aria-labelledby="crew-performance-heading">
             <div class="border-b border-[#edf0ec] px-5 py-4 sm:px-6">
                 <h2 id="crew-performance-heading" class="text-sm font-semibold text-[#26382c]">Field crew performance</h2>
                 <p class="mt-1 text-xs text-[#5f6b62]">Completed and open assignments per field account.</p>
@@ -216,7 +287,7 @@
             @endif
         </section>
 
-        <section class="overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]" aria-labelledby="material-risk-heading">
+        <section id="material-risk" class="scroll-mt-24 overflow-hidden rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] shadow-[0_10px_28px_rgba(29,55,37,.075)]" aria-labelledby="material-risk-heading">
             <div class="flex flex-col justify-between gap-1 border-b border-[#edf0ec] px-5 py-4 sm:flex-row sm:items-center sm:px-6">
                 <div>
                     <h2 id="material-risk-heading" class="text-sm font-semibold text-[#26382c]">Material risk</h2>
@@ -248,7 +319,7 @@
         </section>
     </div>
 
-    <section class="overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]" aria-labelledby="work-order-status-heading">
+    <section id="work-order-pipeline" class="scroll-mt-24 overflow-hidden rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] shadow-[0_10px_28px_rgba(29,55,37,.075)]" aria-labelledby="work-order-status-heading">
         <div class="flex flex-col justify-between gap-1 border-b border-[#edf0ec] px-5 py-4 sm:flex-row sm:items-center sm:px-6">
             <div>
                 <h2 id="work-order-status-heading" class="text-sm font-semibold text-[#26382c]">Work order pipeline</h2>
@@ -275,7 +346,7 @@
     </section>
 
     <div class="grid gap-5 lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.5fr)]">
-        <section class="rounded-2xl border border-[#e2e9e1] bg-white p-5 shadow-[0_8px_28px_rgba(29,55,37,.035)] sm:p-6" aria-labelledby="users-by-role-heading">
+        <section id="team-composition" class="scroll-mt-24 rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] p-5 shadow-[0_10px_28px_rgba(29,55,37,.075)] sm:p-6" aria-labelledby="users-by-role-heading">
             <div>
                 <h2 id="users-by-role-heading" class="text-sm font-semibold text-[#26382c]">Team composition</h2>
                 <p class="mt-1 text-xs text-[#5f6b62]">Users by role · Account distribution across the team.</p>
@@ -302,7 +373,7 @@
             </a>
         </section>
 
-        <section class="overflow-hidden rounded-2xl border border-[#e2e9e1] bg-white shadow-[0_8px_28px_rgba(29,55,37,.035)]" aria-labelledby="recent-activity-heading">
+        <section id="recent-activity" class="scroll-mt-24 overflow-hidden rounded-2xl border border-[#c7d6c9] bg-[#fbfdfb] shadow-[0_10px_28px_rgba(29,55,37,.075)]" aria-labelledby="recent-activity-heading">
             <div class="border-b border-[#edf0ec] px-5 py-4 sm:px-6">
                 <h2 id="recent-activity-heading" class="text-sm font-semibold text-[#26382c]">Recent system activity</h2>
                 <p class="mt-1 text-xs text-[#5f6b62]">Latest account and operational events.</p>
@@ -341,5 +412,6 @@
             @endif
         </section>
     </div>
+</div>
 </div>
 @endsection

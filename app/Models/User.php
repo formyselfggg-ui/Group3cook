@@ -16,6 +16,10 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    private ?array $effectivePermissionsCache = null;
+
+    private ?string $effectivePermissionsCacheRole = null;
+
     public const ROLE_ADMIN = 'admin';
 
     public const ROLE_OPERATIONS = 'operations';
@@ -79,39 +83,43 @@ class User extends Authenticatable
             return array_keys(Permission::catalogue());
         }
 
+        if ($this->effectivePermissionsCache !== null && $this->effectivePermissionsCacheRole === $this->role) {
+            return $this->effectivePermissionsCache;
+        }
+
         $granted = Permission::namesForRole($this->role)->all();
 
         foreach ($this->permissions as $permission) {
             $granted[] = $permission->name;
         }
 
-        return array_values(array_unique($granted));
+        $this->effectivePermissionsCache = array_values(array_unique($granted));
+        $this->effectivePermissionsCacheRole = $this->role;
+
+        return $this->effectivePermissionsCache;
     }
 
     public function hasPermissionTo(string $permission): bool
     {
-        if ($this->role === self::ROLE_ADMIN) {
-            return true;
-        }
-
-        if ($this->relationLoaded('permissions') && $this->permissions->contains('name', $permission)) {
-            return true;
-        }
-
-        if ($this->permissions()->where('name', $permission)->exists()) {
-            return true;
-        }
-
-        return in_array($permission, Permission::namesForRole($this->role)->all(), true);
+        return in_array($permission, $this->effectivePermissions(), true);
     }
 
     public function grantPermission(Permission $permission): void
     {
         $this->permissions()->syncWithoutDetaching([$permission->id]);
+        $this->clearEffectivePermissionsCache();
     }
 
     public function revokePermission(Permission $permission): void
     {
         $this->permissions()->detach($permission->id);
+        $this->clearEffectivePermissionsCache();
+    }
+
+    private function clearEffectivePermissionsCache(): void
+    {
+        $this->effectivePermissionsCache = null;
+        $this->effectivePermissionsCacheRole = null;
+        $this->unsetRelation('permissions');
     }
 }

@@ -2,7 +2,7 @@
     $unreadCount = auth()->user()->unreadNotifications()->count();
 @endphp
 
-<a class="relative inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-[#dce5dc] text-[#4b6553] transition hover:border-[#b8d1bb] hover:bg-[#f5faf4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32714b]"
+<a class="relative inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-white/20 text-[#e1eee4] transition hover:border-white/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b5dda9]"
    href="{{ route('notifications.index') }}"
    aria-label="Notifications{{ $unreadCount > 0 ? ', '.$unreadCount.' unread' : '' }}">
     <svg class="size-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
