@@ -7,3 +7,42 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@layer base {
+    :focus-visible {
+        outline: 2px solid #32714b;
+        outline-offset: 2px;
+    }
+
+    ::selection {
+        background-color: #cde2cd;
+        color: #173a2b;
+    }
+}
+
+@layer components {
+    .dashboard-section-link:hover,
+    .dashboard-section-link:focus-visible {
+        background-color: #12382b;
+        color: #ffffff;
+    }
+
+    .dashboard-section-layout:not(:has(:target)) .dashboard-section-link[href="#performance"],
+    .dashboard-section-layout:has(#performance:target) .dashboard-section-link[href="#performance"],
+    .dashboard-section-layout:has(#assign-work:target) .dashboard-section-link[href="#assign-work"],
+    .dashboard-section-layout:has(#weekly-throughput:target) .dashboard-section-link[href="#weekly-throughput"],
+    .dashboard-section-layout:has(#field-crew-workers:target) .dashboard-section-link[href="#field-crew-workers"],
+    .dashboard-section-layout:not(:has(:target)) .dashboard-section-link[href="#admin-overview"],
+    .dashboard-section-layout:has(#admin-overview:target) .dashboard-section-link[href="#admin-overview"],
+    .dashboard-section-layout:has(#delivery-performance:target) .dashboard-section-link[href="#delivery-performance"],
+    .dashboard-section-layout:has(#weekly-throughput-and-work-aging:target) .dashboard-section-link[href="#weekly-throughput-and-work-aging"],
+    .dashboard-section-layout:has(#work-aging:target) .dashboard-section-link[href="#work-aging"],
+    .dashboard-section-layout:has(#crew-performance:target) .dashboard-section-link[href="#crew-performance"],
+    .dashboard-section-layout:has(#material-risk:target) .dashboard-section-link[href="#material-risk"],
+    .dashboard-section-layout:has(#work-order-pipeline:target) .dashboard-section-link[href="#work-order-pipeline"],
+    .dashboard-section-layout:has(#team-composition:target) .dashboard-section-link[href="#team-composition"],
+    .dashboard-section-layout:has(#recent-activity:target) .dashboard-section-link[href="#recent-activity"] {
+        background-color: #12382b;
+        color: #ffffff;
+    }
+}
