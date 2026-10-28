@@ -10,13 +10,13 @@
     ];
 @endphp
 
-<div {{ $attributes->merge(['class' => 'flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-[#dbe5d8] bg-[#fbfdfa] px-6 py-12 text-center']) }}>
-    <span class="grid size-12 place-items-center rounded-xl bg-[#eef5ec] text-[#3f7a52]">
+<div {{ $attributes->merge(['class' => 'flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 px-6 py-12 text-center']) }}>
+    <span class="grid size-12 place-items-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200">
         <svg class="size-6" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! ($icons[$icon] ?? $icons['inbox']) !!}</svg>
     </span>
-    <p class="text-sm font-semibold text-[#2f4035]">{{ $title }}</p>
+    <p class="text-sm font-semibold text-slate-800">{{ $title }}</p>
     @if ($description)
-        <p class="max-w-sm text-xs leading-5 text-[#5f6b62]">{{ $description }}</p>
+        <p class="max-w-sm text-xs leading-5 text-slate-500">{{ $description }}</p>
     @endif
     @isset($action)
         <div class="mt-2">{{ $action }}</div>
