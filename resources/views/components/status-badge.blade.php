@@ -2,11 +2,11 @@
 
 @php
     $styles = match ($status) {
-        'assigned' => ['bg-[#eaf5eb] text-[#2c5f41] border-[#c6e0ca]', 'clock'],
-        'in_progress' => ['bg-[#edf4fb] text-[#2f5c86] border-[#c6dbef]', 'play'],
-        'for_review' => ['bg-[#f4eff8] text-[#6f4a83] border-[#dccfe6]', 'inbox'],
-        'completed' => ['bg-[#eef5ec] text-[#3d6047] border-[#cfe0cb]', 'check'],
-        default => ['bg-[#f1f4f0] text-[#455449] border-[#dbe3d8]', 'clock'],
+        'assigned' => ['bg-sky-50 text-sky-700 border-sky-200', 'clock'],
+        'in_progress' => ['bg-blue-50 text-blue-700 border-blue-200', 'play'],
+        'for_review' => ['bg-purple-50 text-purple-700 border-purple-200', 'inbox'],
+        'completed' => ['bg-emerald-50 text-emerald-700 border-emerald-200', 'check'],
+        default => ['bg-slate-100 text-slate-700 border-slate-200', 'clock'],
     };
 
     $icons = [

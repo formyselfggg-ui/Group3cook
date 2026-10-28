@@ -10,20 +10,24 @@
 
 @layer base {
     :focus-visible {
-        outline: 2px solid #32714b;
+        outline: 2px solid #059669;
         outline-offset: 2px;
     }
 
     ::selection {
-        background-color: #cde2cd;
-        color: #173a2b;
+        background-color: #d1fae5;
+        color: #064e3b;
     }
 }
 
 @layer components {
+    .dashboard-section-link {
+        color: #475569;
+    }
+
     .dashboard-section-link:hover,
     .dashboard-section-link:focus-visible {
-        background-color: #12382b;
+        background-color: #064e3b;
         color: #ffffff;
     }
 
@@ -42,7 +46,7 @@
     .dashboard-section-layout:has(#work-order-pipeline:target) .dashboard-section-link[href="#work-order-pipeline"],
     .dashboard-section-layout:has(#team-composition:target) .dashboard-section-link[href="#team-composition"],
     .dashboard-section-layout:has(#recent-activity:target) .dashboard-section-link[href="#recent-activity"] {
-        background-color: #12382b;
+        background-color: #064e3b;
         color: #ffffff;
     }
 }

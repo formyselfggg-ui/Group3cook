@@ -2,10 +2,10 @@
 
 @php
     $styles = match ($priority) {
-        'urgent' => ['bg-[#fff0ec] text-[#a0442f] border-[#f2d5cd]', 'alert'],
-        'high' => ['bg-[#fff7e8] text-[#8a6220] border-[#efdfbe]', 'up'],
-        'normal' => ['bg-[#f1f4f0] text-[#455449] border-[#dbe3d8]', 'dash'],
-        default => ['bg-[#f4f7f3] text-[#55655a] border-[#e3eae0]', 'down'],
+        'urgent' => ['bg-rose-50 text-rose-700 border-rose-200', 'alert'],
+        'high' => ['bg-amber-50 text-amber-700 border-amber-200', 'up'],
+        'normal' => ['bg-slate-100 text-slate-700 border-slate-200', 'dash'],
+        default => ['bg-slate-50 text-slate-600 border-slate-200', 'down'],
     };
 
     $icons = [
